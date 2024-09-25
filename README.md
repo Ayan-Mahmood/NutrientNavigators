@@ -1,3 +1,3 @@
 # NutrientNavigators
-Agile Methodolgies Team Project
+Agile Methodolgies Team Project,
 Team 9
