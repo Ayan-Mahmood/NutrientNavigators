@@ -5,4 +5,4 @@ The goal of the Diet Analyzer project is to develop an application that is easy 
 
 The first critical objective of the project is food identification. Using image recognition technology we will enable the user to simplify the logging process. The application will contain an override feature to help ensure that logs are accurate.
 
-The second object is nutritional data analysis. The application will give the user detailed insights into the macronutrients and micronutrients that they are consuming
+The second object is nutritional data analysis. The application will give the user detailed insights into the macronutrients and micronutrients that they are consuming.
