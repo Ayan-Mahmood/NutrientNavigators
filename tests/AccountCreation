@@ -2,7 +2,7 @@ import unittest
 
 class AccountCreation(unittest.TestCase):
     def account_creation(self):
-        account_created = create_account('user1', 'password123')
+        account_created = create_account('testuser', 'securepassword')
         
         self.assertTrue(account_created)
 
