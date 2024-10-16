@@ -1,6 +1,7 @@
 {
   "extends": "././package.json",
   "compilerOptions": {
+    "jsx": "react-jsx",
     "strict": true,
     "paths": {
       "@/*": ["./*"]
