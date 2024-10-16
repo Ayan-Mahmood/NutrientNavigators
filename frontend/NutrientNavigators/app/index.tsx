@@ -1,41 +1,69 @@
-import React, { useEffect, useState } from "react";
-import { registerRootComponent } from 'expo';
-import { Text, View, ActivityIndicator } from "react-native";
-import axios from "axios";
+import React from "react";
+import { View, Text, Button, StyleSheet, Pressable } from "react-native";
+import { registerRootComponent } from "expo";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Register from "./register";
+import Login from "./login";
 
-export default function Index() {
-  const [message, setMessage] = useState(""); // State to store the message
-  const [loading, setLoading] = useState(true); // State to handle loading
+const Stack = createNativeStackNavigator();
 
-  // Fetch the message from the Flask backend
-  useEffect(() => {
-    axios
-      .get("http://127.0.0.1:5000/getmessage") // Replace with your local IP
-      .then((response) => {
-        setMessage(response.data.message); // Set the message from the response
-        setLoading(false); // Turn off loading state
-      })
-      .catch((error) => {
-        console.error("Error fetching the message:", error);
-        setLoading(false); // Turn off loading state even if there's an error
-      });
-  }, []);
-
+function HomeScreen({ navigation }: { navigation: any }) {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <Text>{message}</Text> // Display the fetched message
-      )}
+    <View style={styles.container}>
+      <Pressable
+        style={styles.button}
+        onPress={() => navigation.navigate("Register")}
+      >
+        <Text style={styles.text}>Register</Text>
+      </Pressable>
+      <Pressable
+        style={styles.button}
+        onPress={() => navigation.navigate("Login")}
+      >
+        <Text style={styles.text}>Login</Text>
+      </Pressable>
     </View>
   );
 }
 
-registerRootComponent(Index);
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="Login" component={Login} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+registerRootComponent(App);
+
+const styles = StyleSheet.create({
+  container: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    padding: 10,
+    alignItems: "center",
+    gap: 50,
+  },
+  text: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: "bold",
+    letterSpacing: 0.25,
+    color: "white",
+  },
+  button: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3,
+    backgroundColor: "black",
+  },
+});
