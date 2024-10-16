@@ -12,6 +12,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "entryPoint": "./frontend/NutrientNavigators/app/index.tsx",
     "ios": {
       "supportsTablet": true
     },
