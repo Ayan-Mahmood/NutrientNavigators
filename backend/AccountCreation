@@ -1,0 +1,29 @@
+import unittest
+from app import register
+import requests
+
+def post_function(url, data):
+    response = requests.post(url, json=data)
+    return response.status_code, response.json()
+
+class AccountCreation(unittest.TestCase):
+    @register('requests.post')
+    def test_account_creation(self,mock_post):
+        mock_response = unittest.mock.MagicMock()
+        mock_response.status_code = 201
+        mock_response.json.return_value = {'message': 'success'}
+        mock_post.return_value = mock_response
+        #print(f"{response}")
+        #self.assertEqual(response,success)
+        url = 'http://127.0.0.1:5000/register'
+        data = {'email': 'eliu8@stevens.edu','password': 'nutrientnavigators555'}
+
+        status_code, response_data = post_function(url, data)
+
+        self.assertEqual(status_code, 201)
+        self.assertEqual(response_data, {'message': 'success'})
+
+
+
+if __name__ == '__main__':
+    unittest.main()
