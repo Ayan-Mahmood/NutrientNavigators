@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
 import axios from 'axios';
 
-const flask_api = null;
+const flask_api = 'unknown';
 
 const RegisterScreen = () => {
     const [email, setEmail] = useState('');
