@@ -5,23 +5,28 @@ from mysql.connector import Error
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 db_config = {
-    'host': 'localhost',  # Replace with MySQL host
-    'user': 'your_mysql_user',  # Replace with MySQL username
-    'password': 'your_mysql_password',  # Replace with  MySQL password
-    'database': 'your_database'  # Replace with MySQL database name
+    'host': 'nutrientnavigatorsdb.cf2osw08aov0.us-east-1.rds.amazonaws.com',  # Replace with your MySQL host
+    'user': 'admin',  # Replace with your MySQL username
+    'password': 'nutrientnavigators555',  # Replace with your MySQL password
+    'database': 'NutrientNavigatorsDB'  # Replace with your MySQL database name
 }
 
 def get_db_connection():
     """Establish a connection to the MySQL database."""
-    connection = None
     try:
-        connection = mysql.connector.connect(**db_config)
+        connection = mysql.connector.connect(
+            host=db_config['host'],
+            user=db_config['user'],
+            password=db_config['password'],
+            database=db_config['database']
+        )
+        return connection
     except Error as e:
         print(f"Error connecting to MySQL: {e}")
-    return connection
+        return None
 
 @app.route('/getmessage', methods=['GET'])
 def get_message():
@@ -30,47 +35,50 @@ def get_message():
 @app.route('/register', methods=['POST'])
 def register():
     connection = get_db_connection()
+    if connection is None:
+        return jsonify({"success": False, "error": "Database connection failed"}), 500
     cursor = connection.cursor()
-    
-    #extract data from request
-    data = request.get_json()
-    email = data.get('email')
-    password = data.get('password')
-    
-    #check if email alreadt in database
-    cursor.execute('SELECT * FROM users WHERE email = %s', (email,))
-    existing_user = cursor.fetchone()
-    
-    if existing_user:
-        return jsonify({'error': 'User already exists!'})
-    
-    #hash password
-    hashed_password = generate_password_hash(password)
-    
-    #insert user into database
+
     try:
+        # Extract data from request
+        data = request.get_json()
+        email = data.get('email')
+        password = data.get('password')
+
+        # Check if email already in database
+        cursor.execute('SELECT * FROM user WHERE email = %s', (email,))
+        existing_user = cursor.fetchone()
+
+        if existing_user:
+            return jsonify({'success': False, 'error': 'User already exists!'}), 400
+
+        # Hash password
+        hashed_password = generate_password_hash(password)
+
+        # Insert user into database
         cursor.execute(
             "INSERT INTO user (email, password) VALUES (%s, %s)",
             (email, hashed_password)
         )
         connection.commit()
-        return jsonify({"message": "User registered successfully!"}), 201
+        return jsonify({"success": True, "message": "User registered successfully!"}), 201
     except Error as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
     finally:
-        cursor.close()
-        connection.close()
-    
-    
+        if cursor is not None:
+            cursor.close()
+        if connection is not None:
+            connection.close()
+
 @app.route('/login', methods=['POST'])
 def login():
     """Login a user by checking their email and password."""
-    connection = None
-    cursor = None
-    try:
-        connection = get_db_connection()
-        cursor = connection.cursor()
+    connection = get_db_connection()
+    if connection is None:
+        return jsonify({"success": False, "error": "Database connection failed"}), 500
+    cursor = connection.cursor()
 
+    try:
         # Extract data from the request body
         data = request.get_json()
         email = data.get('email')
@@ -82,24 +90,22 @@ def login():
 
         if user:
             # Verify the password
-            stored_password = user[2]  # Assuming password is the second column in the user table
+            stored_password = user[2]  # Assuming password is the third column in the user table
             if check_password_hash(stored_password, password):
-                return jsonify({"message": "Login successful!"}), 200
+                return jsonify({"success": True, "message": "Login successful!"}), 200
             else:
-                return jsonify({"error": "Invalid password!"}), 401
+                return jsonify({"success": False, "error": "Invalid password!"}), 401
         else:
-            return jsonify({"error": "User not found!"}), 404
-    
+            return jsonify({"success": False, "error": "User not found!"}), 404
+
     except Error as e:
-        return jsonify({"error": str(e)}), 500
-    
+        return jsonify({"success": False, "error": str(e)}), 500
+
     finally:
         if cursor is not None:
             cursor.close()
         if connection is not None:
-            connection.close()    
-    
-    
-    
+            connection.close()
+
 if __name__ == '__main__':
     app.run(debug=True)

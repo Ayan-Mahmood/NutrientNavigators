@@ -22,9 +22,16 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
 
       if (response.data.success) {
         console.log("Login is successful!");
+        // You might want to navigate to a different screen or clear the form here
+      } else {
+        setError(response.data.error || "Login failed.");
       }
     } catch (error) {
-      alert("Login failed. Please try again.");
+      if (error.response && error.response.data && error.response.data.error) {
+        setError(error.response.data.error);
+      } else {
+        setError("Login failed. Please try again.");
+      }
     }
   };
 

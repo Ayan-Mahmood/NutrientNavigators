@@ -22,9 +22,16 @@ const Register: React.FC<RegisterProps> = ({ navigation }) => {
 
       if (response.data.success) {
         console.log("Registration is successful!");
+        // You might want to navigate to a different screen or clear the form here
+      } else {
+        setError(response.data.error || "Registration failed.");
       }
     } catch (error) {
-      alert("Registration failed. Please try again.");
+      if (error.response && error.response.data && error.response.data.error) {
+        setError(error.response.data.error);
+      } else {
+        setError("Registration failed. Please try again.");
+      }
     }
   };
 
