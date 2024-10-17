@@ -46,7 +46,7 @@ def register():
         password = data.get('password')
 
         # Check if email already in database
-        cursor.execute('SELECT * FROM user WHERE email = %s', (email,))
+        cursor.execute('SELECT * FROM Users WHERE email = %s', (email,))
         existing_user = cursor.fetchone()
 
         if existing_user:
@@ -57,7 +57,7 @@ def register():
 
         # Insert user into database
         cursor.execute(
-            "INSERT INTO user (email, password) VALUES (%s, %s)",
+            "INSERT INTO Users (email, password) VALUES (%s, %s)",
             (email, hashed_password)
         )
         connection.commit()
@@ -85,7 +85,7 @@ def login():
         password = data.get('password')
 
         # Check if user exists in the database
-        cursor.execute("SELECT * FROM user WHERE email = %s", (email,))
+        cursor.execute("SELECT * FROM Users WHERE email = %s", (email,))
         user = cursor.fetchone()
 
         if user:
