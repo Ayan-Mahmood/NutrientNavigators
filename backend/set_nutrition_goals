@@ -1,0 +1,78 @@
+def convert_height_to_cm(height):
+    if 'ft' in height:  # For feet and inches
+        parts = height.split('ft')
+        feet = int(parts[0].strip())
+        inches = int(parts[1].strip().replace('in', '')) if 'in' in parts[1] else 0
+        return round(feet * 30.48 + inches * 2.54, 2)
+    elif 'cm' in height:
+        return float(height.replace('cm', '').strip())
+
+def convert_weight_to_kg(weight):
+    if 'lbs' in weight:
+        pounds = float(weight.replace('lbs', '').strip())
+        return round(pounds * 0.453592, 2)
+    elif 'kg' in weight:
+        return float(weight.replace('kg', '').strip())
+
+def calculate_standard_macros(goal, diet):
+    if goal == "Lose weight":
+        return {"protein": 30, "carbs": 40, "fats": 30}
+    elif goal == "Build muscle":
+        return {"protein": 40, "carbs": 40, "fats": 20}
+    # Add more conditions based on goals and diets
+    return {"protein": 30, "carbs": 35, "fats": 35}  # Standard anything diet ratio
+
+@app.route('/set_goals', methods=['POST'])
+def set_goals():
+    connection = get_db_connection()
+    if connection is None:
+        return jsonify({"success": False, "error": "Database connection failed"}), 500
+    cursor = connection.cursor()
+
+    try:
+        data = request.get_json()
+        #user_id = data.get('user_id') what's our variable for user id?
+        age = data.get('age')
+        biological_sex = data.get('biological_sex')
+        height = data.get('height')
+        weight = data.get('weight')
+        goal = data.get('goal')
+        preferred_diet = data.get('preferred_diet')
+        macro_choice = data.get('macro_choice')
+        daily_meals = data.get('daily_meals')
+        activity_level = data.get('activity_level')
+        weekly_workouts = data.get('weekly_workouts')
+
+        height_cm = convert_height_to_cm(height)
+        weight_kg = convert_weight_to_kg(weight)
+
+        if macro_choice == "Standard":
+            macros = calculate_standard_macros(goal, diet)
+        else:
+            macros = {
+                "protein": data.get('protein'),
+                "carbs": data.get('carbs'),
+                "fats": data.get('fats')
+            }
+
+        # Enter profile data into database
+         cursor.execute("""
+            INSERT INTO user_profile 
+            (user_id, age, sex, height, weight, goal, diet, meals_per_day, activity_level, workout_intensity, protein, carbs, fats) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (user_id, age, sex, height, weight, goal, diet, meals_per_day, activity_level, workout_intensity, macros['protein'], macros['carbs'], macros['fats']))
+            #will this create a new user id or enter info into the existing one?
+            
+        connection.commit()
+
+        return jsonify({"success": True, "message": "Goals and nutrition plan saved successfully!"}), 201
+    except Error as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
+if __name__ == '__main__':
+    app.run(debug=True)
