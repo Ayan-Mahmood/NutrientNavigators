@@ -16,15 +16,15 @@ def convert_weight_to_kg(weight):
 
 def calculate_standard_macros(goal, diet):
     if goal == "Lose weight":
-        return {"protein": 30, "carbs": 40, "fats": 30}
+        return {"protein": 35, "carbs": 25, "fats": 35}
     elif goal == "Build muscle":
-        return {"protein": 40, "carbs": 40, "fats": 20}
+        return {"protein": 35, "carbs": 45, "fats": 20}
     elif goal == "Athletic Performance":
-        return {"protein": 30, "carbs": 35, "fats": 35}
+        return {"protein": 30, "carbs": 50, "fats": 20}
     elif goal == "Body Recomposition":
-        return {"protein": 30, "carbs": 35, "fats": 35}
+        return {"protein": 35, "carbs": 35, "fats": 30}
     elif goal == "Improve Health":
-        return {"protein": 30, "carbs": 35, "fats": 35}
+        return {"protein": 30, "carbs": 45, "fats": 25}
     # Add more conditions based on goals and diets
     # numbers need revision
     return {"protein": 30, "carbs": 35, "fats": 35}  # Standard anything diet ratio
