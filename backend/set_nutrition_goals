@@ -38,12 +38,12 @@ def set_goals():
 
     try:
         data = request.get_json()
-        #user_id = data.get('user_id') what's our variable for user id?
+        user_id = data.get('user_id') what's our variable for user id?
         age = data.get('age')
         biological_sex = data.get('biological_sex')
             #options: male/female
         height = data.get('height')
-            #option for ft+in or cm; set valid entries between 2 and 9 feet
+            #must have separate fields for ft + in, option for ft+in or cm; set valid entries between 2 and 9 feet
         weight = data.get('weight')
             #set valid entries between 50 and 500 lbs
         goal = data.get('goal')
@@ -83,7 +83,7 @@ def set_goals():
          cursor.execute("""
             INSERT INTO user_profile 
             (user_id, age, biological_sex, height, weight, goal, preferred_diet, macro_choice, daily_meals, activity_level, weekly_workouts, protein, carbs, fats) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, &s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (user_id, age, biological_sex, height, weight, goal, preferred_diet, daily_meals, activity_level, weekly_workouts, macros['protein'], macros['carbs'], macros['fats']))
             #will this create a new user id or enter info into the existing one?
             
