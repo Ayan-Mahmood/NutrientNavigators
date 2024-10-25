@@ -23,6 +23,7 @@ const Register: React.FC<RegisterProps> = ({ navigation }) => {
       if (response.data.success) {
         console.log("Registration is successful!");
         // You might want to navigate to a different screen or clear the form here
+        navigation.navigate("Home");
       } else {
         setError(response.data.error || "Registration failed.");
       }

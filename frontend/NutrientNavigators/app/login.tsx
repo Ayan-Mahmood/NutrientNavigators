@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { View, TextInput, Button, Text, StyleSheet } from "react-native";
+import { View, TextInput, Button, Text, StyleSheet, Pressable } from "react-native";
 import axios from "axios";
-
 const flask_api = "http://127.0.0.1:5000";
 
 interface LoginProps {
@@ -12,6 +11,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  
 
   const handleLogin = async () => {
     try {
@@ -23,13 +23,15 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
       if (response.data.success) {
         console.log("Login is successful!");
         // You might want to navigate to a different screen or clear the form here
+        
+        navigation.navigate("Home");
       } else {
         setError(response.data.error || "Login failed.");
       }
     } catch (error) {
       if (error.response && error.response.data && error.response.data.error) {
         setError(error.response.data.error);
-      } else {
+      } else {  
         setError("Login failed. Please try again.");
       }
     }
@@ -72,6 +74,24 @@ const styles = StyleSheet.create({
   error: {
     color: "red",
   },
+  button: {
+    margin: "auto",
+    marginBottom: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3,
+    backgroundColor: "black",
+  },
+  text:{
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: "bold",
+    letterSpacing: 0.25,
+    color: "white",
+  }
 });
 
 export default Login;
