@@ -1,14 +1,14 @@
-import React from "react";
+import React, {useState} from "react";
 import { View, Text, Button, StyleSheet, Pressable } from "react-native";
 import { registerRootComponent } from "expo";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Register from "./register";
 import Login from "./login";
+import HomePage from "./homePage";
 
 const Stack = createNativeStackNavigator();
-
-function HomeScreen({ navigation }: { navigation: any }) {
+export function Registration_Login_Page({ navigation }: { navigation: any }) {
   return (
     <View style={styles.container}>
       <Pressable
@@ -28,12 +28,16 @@ function HomeScreen({ navigation }: { navigation: any }) {
 }
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="LoginPage" component={Registration_Login_Page} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Home" component={HomePage}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
