@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { View, Text, Button, StyleSheet, Pressable } from "react-native";
 import { registerRootComponent } from "expo";
 import { NavigationContainer } from "@react-navigation/native";
@@ -30,14 +30,13 @@ export function Registration_Login_Page({ navigation }: { navigation: any }) {
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
+      <Stack.Navigator initialRouteName="HomePage">
         <Stack.Screen name="LoginPage" component={Registration_Login_Page} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Home" component={HomePage}/>
+        <Stack.Screen name="HomePage" component={HomePage} />
       </Stack.Navigator>
     </NavigationContainer>
   );

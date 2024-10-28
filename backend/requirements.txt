@@ -1,0 +1,4 @@
+Flask==3.0.3
+Flask_Cors==5.0.0
+mysql_connector_repackaged==0.3.1
+Werkzeug==3.0.6
