@@ -7,6 +7,7 @@ import Register from "../components/pages/registerPage";
 import Login from "../components/pages/loginPage";
 import landingPage from "../components/pages/landingPage";
 import HomePage from "../components/pages/homePage";
+
 export type RootStackParamList = {
   LoginPage: undefined;
   landingPage: undefined;

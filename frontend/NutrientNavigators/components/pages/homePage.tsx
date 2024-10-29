@@ -35,6 +35,7 @@ const HomePage: React.FC<HomePageProps> = ({ navigation, route }) => {
         <Button
           title="Logout"
           color="red"
+          //should also clear AccountInfo
           onPress={() => navigation.replace("LoginPage")}
         />
       </View>

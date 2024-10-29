@@ -28,7 +28,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
 
       if (response.data.success) {
         console.log("Login is successful!");
-        navigation.navigate("homePage", {
+        navigation.navigate("HomePage", {
           AccountInfo: {
             id: response.data.id,
             email: email,
