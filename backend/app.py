@@ -59,7 +59,7 @@ def register():
         # Insert user into database
         cursor.execute(
             "INSERT INTO Users (email, password) VALUES (%s, %s)",
-            (email, hashed_password)
+            (email, password)
         )
         connection.commit()
         return jsonify({"success": True, "message": "User registered successfully!"}), 201
@@ -93,9 +93,8 @@ def login():
             # Verify the password
             print(user[2])
             print(password)
-            stored_password = user[2]  # Assuming password is the third column in the user table
-            print(check_password_hash(stored_password, password))
-            if check_password_hash(stored_password, password):
+            stored_password = user[2]  # Assuming password is the third column in the user table)
+            if (password == stored_password):
                 return jsonify({"success": True, "message": "Login successful!"}), 200
             else:
                 return jsonify({"success": False, "error": "Invalid password!"}), 401
