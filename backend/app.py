@@ -8,11 +8,12 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 db_config = {
-    'host': 'nutrientnavigatorsdb.cf2osw08aov0.us-east-1.rds.amazonaws.com',  # Replace with your MySQL host
-    'user': 'admin',  # Replace with your MySQL username
-    'password': 'nutrientnavigators555',  # Replace with your MySQL password
-    'database': 'NutrientNavigatorsDB'  # Replace with your MySQL database name
+    'host': 'sql5.freemysqlhosting.net',  # Your MySQL host
+    'user': 'sql5741512',  # Your MySQL username
+    'password': 'cdq3bvxp1c',  # Your MySQL password
+    'database': 'sql5741512'  # Your MySQL database name
 }
+
 
 def get_db_connection():
     """Establish a connection to the MySQL database."""
@@ -90,7 +91,10 @@ def login():
 
         if user:
             # Verify the password
+            print(user[2])
+            print(password)
             stored_password = user[2]  # Assuming password is the third column in the user table
+            print(check_password_hash(stored_password, password))
             if check_password_hash(stored_password, password):
                 return jsonify({"success": True, "message": "Login successful!"}), 200
             else:
