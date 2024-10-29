@@ -1,37 +1,41 @@
 import React, { useState } from "react";
-import { View, TextInput, Button, Text, StyleSheet, Pressable } from "react-native";
+import { View, TextInput, Button, Text, StyleSheet } from "react-native";
 import axios from "axios";
-const flask_api = "http://127.0.0.1:5000";
-import HomePage from "./homePage";
 
-interface LoginProps {
+const flask_api = "http://127.0.0.1:5000";
+
+interface RegisterProps {
   navigation: any;
 }
 
-const Login: React.FC<LoginProps> = ({ navigation }) => {
+const Register: React.FC<RegisterProps> = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     try {
-      const response = await axios.post(`${flask_api}/login`, {
+      const response = await axios.post(`${flask_api}/register`, {
         email,
         password,
       });
 
       if (response.data.success) {
-        console.log("Login is successful!");
-        navigation.navigate("HomePage");
+        console.log("Registration is successful!");
+        navigation.navigate("homePage", {
+          AccountInfo: {
+            id: response.data.id,
+            email: email,
+          },
+        });
       } else {
-        setError(response.data.error || "Login failed.");
+        setError(response.data.error || "Registration failed.");
       }
     } catch (error) {
       if (error.response && error.response.data && error.response.data.error) {
         setError(error.response.data.error);
-      } else {  
-        setError("Login failed. Please try again.");
+      } else {
+        setError("Registration failed. Please try again.");
       }
     }
   };
@@ -53,7 +57,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Login" onPress={handleLogin} />
+      <Button title="Register" onPress={handleRegister} />
       {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
   );
@@ -73,24 +77,6 @@ const styles = StyleSheet.create({
   error: {
     color: "red",
   },
-  button: {
-    margin: "auto",
-    marginBottom: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 4,
-    elevation: 3,
-    backgroundColor: "black",
-  },
-  text:{
-    fontSize: 16,
-    lineHeight: 21,
-    fontWeight: "bold",
-    letterSpacing: 0.25,
-    color: "white",
-  }
 });
 
-export default Login;
+export default Register;
