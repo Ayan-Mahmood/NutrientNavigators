@@ -3,11 +3,21 @@ import { View, Text, Button, StyleSheet, Pressable } from "react-native";
 import { registerRootComponent } from "expo";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Register from "./register";
-import Login from "./login";
-import HomePage from "./homePage";
+import Register from "../components/pages/registerPage";
+import Login from "../components/pages/loginPage";
+import landingPage from "../components/pages/landingPage";
+import HomePage from "../components/pages/homePage";
 
-const Stack = createNativeStackNavigator();
+export type RootStackParamList = {
+  LoginPage: undefined;
+  landingPage: undefined;
+  Login: { AccountInfo: { id: string; email: string } };
+  Register: { AccountInfo: { id: string; email: string } };
+  HomePage: { AccountInfo: { id: string; email: string } };
+  MealLogger: { AccountInfo: { id: string; email: string } };
+  ProgressPage: { AccountInfo: { id: string; email: string } };
+};
+const Stack = createNativeStackNavigator<RootStackParamList>();
 export function Registration_Login_Page({ navigation }: { navigation: any }) {
   return (
     <View style={styles.container}>
@@ -32,11 +42,32 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="HomePage">
-        <Stack.Screen name="LoginPage" component={Registration_Login_Page} />
-        <Stack.Screen name="Register" component={Register} />
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="HomePage" component={HomePage} />
+      <Stack.Navigator initialRouteName="landingPage">
+        <Stack.Screen
+          options={{ title: "Register / Log-in" }}
+          name="LoginPage"
+          component={Registration_Login_Page}
+        />
+        <Stack.Screen
+          options={{ title: "Register" }}
+          name="Register"
+          component={Register}
+        />
+        <Stack.Screen
+          options={{ title: "Login" }}
+          name="Login"
+          component={Login}
+        />
+        <Stack.Screen
+          options={{ title: "Nutrient Navigators" }}
+          name="landingPage"
+          component={landingPage}
+        />
+        <Stack.Screen
+          options={{ title: "Home Page" }}
+          name="HomePage"
+          component={HomePage}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
