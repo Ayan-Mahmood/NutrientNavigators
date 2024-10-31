@@ -7,14 +7,14 @@ import Register from "../components/pages/registerPage";
 import Login from "../components/pages/loginPage";
 import landingPage from "../components/pages/landingPage";
 import HomePage from "../components/pages/homePage";
-
+import SetGoalsPage from "../components/pages/SetGoalsProps";
 export type RootStackParamList = {
   LoginPage: undefined;
   landingPage: undefined;
   Login: { AccountInfo: { id: string; email: string } };
   Register: { AccountInfo: { id: string; email: string } };
   HomePage: { AccountInfo: { id: string; email: string } };
-  MealLogger: { AccountInfo: { id: string; email: string } };
+  SetGoalsPage: { AccountInfo: { id: string; email: string } };
   ProgressPage: { AccountInfo: { id: string; email: string } };
 };
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -68,11 +68,15 @@ export default function App() {
           name="HomePage"
           component={HomePage}
         />
+        <Stack.Screen
+          options={{ title: "Set Goals" }}
+          name="SetGoalsPage"
+          component={SetGoalsPage}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
-
 registerRootComponent(App);
 
 const styles = StyleSheet.create({

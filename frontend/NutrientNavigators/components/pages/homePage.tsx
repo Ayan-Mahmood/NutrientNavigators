@@ -25,8 +25,8 @@ const HomePage: React.FC<HomePageProps> = ({ navigation, route }) => {
 
       <View style={styles.buttonContainer}>
         <Button
-          title="Log Your Meal"
-          onPress={() => navigation.navigate("MealLogger", { AccountInfo })}
+          title="Set Personal Information and Goals"
+          onPress={() => navigation.navigate("SetGoalsPage", { AccountInfo })}
         />
         <Button
           title="View Progress"
