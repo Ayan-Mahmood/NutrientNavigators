@@ -5,7 +5,7 @@ from mysql.connector import Error
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app)
 
 db_config = {
     'host': 'sql5.freemysqlhosting.net',  # Your MySQL host
