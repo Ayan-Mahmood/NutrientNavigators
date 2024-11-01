@@ -1,34 +1,28 @@
-from flask import Flask, request, jsonify
+# photo_recognition.py
+from flask import Blueprint, request, jsonify
 from flask_cors import CORS
-from clarifai_grpc.channel.clarifai_channel import ClarifaiChannel
-from clarifai_grpc.grpc.api import resources_pb2, service_pb2, service_pb2_grpc
-from clarifai_grpc.grpc.api.status import status_code_pb2
-import base64
 import mysql.connector
 from mysql.connector import Error
+import requests
+import base64
 
-app = Flask(__name__)
-CORS(app)
+photo_recognition = Blueprint("photo_recognition", __name__)
+CORS(photo_recognition)
 
-# Clarifai API credentials
-USER_ID = 'd30m17xwreuq'
+# Clarifai API credentials (starter code given by Clarifai when using the API and not using it on an app on the website)
 PAT = 'fe940b734e624ecd8b639f32e6e45fe3'
+USER_ID = 'clarifai'
 APP_ID = 'main'
-WORKFLOW_ID = 'Food'
+MODEL_ID = 'food-item-recognition'
+MODEL_VERSION_ID = '1d5fd481e0cf4826aa72ec3ff049e044'
+CLARIFAI_URL = f"https://api.clarifai.com/v2/models/{MODEL_ID}/versions/{MODEL_VERSION_ID}/outputs"
 
-# MySQL configuration for storing overrides
 db_config = {
-    'host': 'nutrientnavigatorsdb.cf2osw08aov0.us-east-1.rds.amazonaws.com',  # Replace with your MySQL host
-    'user': 'admin',  # Replace with your MySQL username
-    'password': 'nutrientnavigators555',  # Replace with your MySQL password
-    'database': 'NutrientNavigatorsDB'  # Replace with your MySQL database name
+    'host': 'sql5.freemysqlhosting.net',
+    'user': 'sql5741512',
+    'password': 'cdq3bvxp1c',
+    'database': 'sql5741512'
 }
-
-# Set up the Clarifai gRPC connection
-channel = ClarifaiChannel.get_grpc_channel()
-stub = service_pb2_grpc.V2Stub(channel)
-metadata = (('authorization', 'Key ' + PAT),)
-userDataObject = resources_pb2.UserAppIDSet(user_id=USER_ID, app_id=APP_ID)
 
 def get_db_connection():
     """Establish a connection to the MySQL database."""
@@ -39,46 +33,59 @@ def get_db_connection():
         print(f"Error connecting to MySQL: {e}")
     return connection
 
-
-@app.route('/recognize_food', methods=['POST'])
+# recognizes the food by connecting to the Clarifai food-recognition-api
+@photo_recognition.route('/recognize_food', methods=['POST'])
 def recognize_food():
-    # Get the image file from the request
+    print("Request headers:", request.headers)
+    print("Request form:", request.form)
+    print("Request files:", request.files)
+
     image_file = request.files.get('image')
     if not image_file:
+        print("No image file received.")
         return jsonify({"error": "No image file provided"}), 400
 
-    # Read the image and encode it to base64
-    image_data = base64.b64encode(image_file.read()).decode('utf-8')
+    # reading the file in base64 as we had seen a previous example of doing so for image encoding
+    image_bytes = image_file.read()
+    base64_image = base64.b64encode(image_bytes).decode('utf-8')
 
-    # Call Clarifai API to recognize food in the image using the gRPC workflow
+    headers = {
+        'Authorization': f'Key {PAT}',
+        'Content-Type': 'application/json'
+    }
+
+    # create the data that will be used for the Clarifai
+    data = {
+        "user_app_id": {
+            "user_id": USER_ID,
+            "app_id": APP_ID
+        },
+        "inputs": [
+            {
+                "data": {
+                    "image": {
+                        "base64": base64_image
+                    }
+                }
+            }
+        ]
+    }
+
     try:
-        post_workflow_results_response = stub.PostWorkflowResults(
-            service_pb2.PostWorkflowResultsRequest(
-                user_app_id=userDataObject,
-                workflow_id=WORKFLOW_ID,
-                inputs=[
-                    resources_pb2.Input(
-                        data=resources_pb2.Data(
-                            image=resources_pb2.Image(
-                                base64=image_data
-                            )
-                        )
-                    )
-                ]
-            ),
-            metadata=metadata
-        )
+        # create a POST request to Clarifai API
+        response = requests.post(CLARIFAI_URL, headers=headers, json=data)
+        response_data = response.json()
 
-        if post_workflow_results_response.status.code != status_code_pb2.SUCCESS:
-            print(post_workflow_results_response.status)
+        # error checking to see if it is successful
+        if response.status_code != 200 or 'outputs' not in response_data:
+            print(f"Clarifai API error: {response_data}")
             return jsonify({"error": "Failed to process image"}), 500
 
-        # Process results
-        results = post_workflow_results_response.results[0]
-        food_items = []
-        for output in results.outputs:
-            for concept in output.data.concepts:
-                food_items.append({"name": concept.name, "confidence": concept.value})
+        # acquire the food items and level of confidence pertaining to each food item
+        food_items = [
+            {"name": concept["name"], "confidence": concept["value"]}
+            for concept in response_data['outputs'][0]['data']['concepts']
+        ]
 
         return jsonify({"recognized_food": food_items}), 200
 
@@ -86,21 +93,17 @@ def recognize_food():
         print(f"Error recognizing food: {e}")
         return jsonify({"error": "Failed to recognize food"}), 500
 
-
-
-@app.route('/override_food', methods=['POST'])
+# option for the user to override the food and input what the food actually is
+@photo_recognition.route('/override_food', methods=['POST'])
 def override_food():
-    # Extract the data from the request
     data = request.get_json()
     original_food = data.get('original_food')
     overridden_food = data.get('overridden_food')
-    user_id = data.get('user_id')  # Optionally store with user ID
+    user_id = data.get('user_id')
 
-    # Check if the required data is provided
     if not original_food or not overridden_food:
         return jsonify({"error": "Original and overridden food names are required"}), 400
 
-    # Store the overridden item in the database
     connection = get_db_connection()
     if connection is None:
         return jsonify({"error": "Database connection failed"}), 500
@@ -120,5 +123,4 @@ def override_food():
         cursor.close()
         connection.close()
 
-if __name__ == '__main__':
-    app.run(debug=True)
+

@@ -28,7 +28,13 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photoPermission": "The app accesses your photos to let you upload them for nutritional analysis."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
