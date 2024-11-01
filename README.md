@@ -9,7 +9,42 @@ The first critical objective of the project is food identification. Using image 
 
 The second object is nutritional data analysis. The application will give the user detailed insights into the macronutrients and micronutrients that they are consuming.
 
-Project start:
+## How to install the project
+Open a terminal and run the following commands:
+
+npm install
+
+pip install flask
+
+pip install flask_cors
+
+pip install mysql.connector
+
+## How to run the project:
+
 Open a split terminal or two separate terminals
-In one terminal run npx expo -w
-In the other terminal run python3 backend/app.py
+
+In one terminal run: npx expo start --web
+
+In the other terminal run: python3 backend/app.py
+
+
+## If running in codespaces update API URL on frontend to forwarding address.
+
+Change: http://127.0.0.1:5000
+
+To a URL like this example: https://nasty-crypt-xgr6rqp6r4v3xpr-5000.app.github.dev/
+
+
+## Troubleshooting
+
+### Address already in use Port 5000 is in use by another program. Either identify and stop that program, or start the server with a different port.
+
+Run the following commands in the termnal:
+
+
+lsof -t -i:5000
+
+Terminal will output list of processed. Get the PID and use in next command.
+
+kill <PID>
