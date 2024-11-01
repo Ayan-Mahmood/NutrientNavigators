@@ -24,20 +24,30 @@ const HomePage: React.FC<HomePageProps> = ({ navigation, route }) => {
       <Text style={styles.welcome}>Welcome back, {AccountInfo.email}!</Text>
 
       <View style={styles.buttonContainer}>
-        <Button
-          title="Set Personal Information and Goals"
-          onPress={() => navigation.navigate("SetGoalsPage", { AccountInfo })}
-        />
-        <Button
-          title="View Progress"
-          onPress={() => navigation.navigate("ProgressPage", { AccountInfo })}
-        />
-        <Button
-          title="Logout"
-          color="red"
-          //should also clear AccountInfo
-          onPress={() => navigation.replace("LoginPage")}
-        />
+        {/* Log Meal Button to Navigate to Upload Screen */}
+        <View style={styles.buttonSpacing}>
+          <Button
+            title="Log Your Meal"
+            onPress={() => navigation.navigate("Upload")}
+          />
+        </View>
+
+        {/* View Progress Button */}
+        <View style={styles.buttonSpacing}>
+          <Button
+            title="View Progress"
+            onPress={() => navigation.navigate("ProgressPage", { AccountInfo })}
+          />
+        </View>
+
+        {/* Logout Button */}
+        <View style={styles.buttonSpacing}>
+          <Button
+            title="Logout"
+            color="red"
+            onPress={() => navigation.replace("LoginPage")}
+          />
+        </View>
       </View>
     </View>
   );
@@ -62,6 +72,7 @@ const styles = StyleSheet.create({
   },
   buttonSpacing: {
     marginVertical: 10,
+    width: "80%",  // Optional: Set button width for consistency
   },
 });
 

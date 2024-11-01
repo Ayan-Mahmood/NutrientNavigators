@@ -3,9 +3,14 @@ from flask_cors import CORS
 import mysql.connector
 from mysql.connector import Error
 from werkzeug.security import generate_password_hash, check_password_hash
+from photo_recognition import photo_recognition
+
 
 app = Flask(__name__)
-CORS(app)
+#CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": "http://localhost:19006"}})
+# Register the Blueprint with an optional URL prefix
+app.register_blueprint(photo_recognition)
 
 db_config = {
     'host': 'sql5.freemysqlhosting.net',  # Your MySQL host

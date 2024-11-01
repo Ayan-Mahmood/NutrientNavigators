@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Button, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import { registerRootComponent } from "expo";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -7,17 +7,25 @@ import Register from "../components/pages/registerPage";
 import Login from "../components/pages/loginPage";
 import landingPage from "../components/pages/landingPage";
 import HomePage from "../components/pages/homePage";
-import SetGoalsPage from "../components/pages/SetGoalsProps";
+import UploadScreen from "../components/pages/uploadScreen";
+// import PredictionScreen from "../components/pages/predictionScreen";
+// import OverrideScreen from "../components/pages/overrideScreen";
+
 export type RootStackParamList = {
   LoginPage: undefined;
   landingPage: undefined;
   Login: { AccountInfo: { id: string; email: string } };
   Register: { AccountInfo: { id: string; email: string } };
   HomePage: { AccountInfo: { id: string; email: string } };
-  SetGoalsPage: { AccountInfo: { id: string; email: string } };
+  MealLogger: { AccountInfo: { id: string; email: string } };
   ProgressPage: { AccountInfo: { id: string; email: string } };
+  Upload: undefined;
+  Prediction: { foodItems: { name: string; confidence: number }[] };
+  Override: { originalFood: string };
 };
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
 export function Registration_Login_Page({ navigation }: { navigation: any }) {
   return (
     <View style={styles.container}>
@@ -69,14 +77,25 @@ export default function App() {
           component={HomePage}
         />
         <Stack.Screen
-          options={{ title: "Set Goals" }}
-          name="SetGoalsPage"
-          component={SetGoalsPage}
+          options={{ title: "Upload Food Image" }}
+          name="Upload"
+          component={UploadScreen}
         />
+        {/* <Stack.Screen
+          options={{ title: "Prediction Results" }}
+          name="Prediction"
+          component={PredictionScreen}
+        />
+        <Stack.Screen
+          options={{ title: "Override Prediction" }}
+          name="Override"
+          component={OverrideScreen}
+        /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
+
 registerRootComponent(App);
 
 const styles = StyleSheet.create({
