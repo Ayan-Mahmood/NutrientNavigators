@@ -35,8 +35,8 @@ const HomePage: React.FC<HomePageProps> = ({ navigation, route }) => {
         {/* View Progress Button */}
         <View style={styles.buttonSpacing}>
           <Button
-            title="View Progress"
-            onPress={() => navigation.navigate("ProgressPage", { AccountInfo })}
+            title="Set Your Personal Goals"
+            onPress={() => navigation.navigate("SetGoalsPage", { AccountInfo })}
           />
         </View>
 
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   },
   buttonSpacing: {
     marginVertical: 10,
-    width: "80%",  // Optional: Set button width for consistency
+    width: "80%", // Optional: Set button width for consistency
   },
 });
 

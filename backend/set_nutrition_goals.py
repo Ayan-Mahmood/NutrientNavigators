@@ -1,3 +1,11 @@
+from app import *
+from flask import Blueprint, request, jsonify
+from flask_cors import CORS
+from mysql.connector import Error
+
+set_nutrition = Blueprint("set_nutritions_goals", __name__)
+
+CORS(set_nutrition)
 def convert_height_to_cm(height):
     if 'ft' in height:
         parts = height.split('ft')
@@ -38,7 +46,7 @@ def set_goals():
 
     try:
         data = request.get_json()
-        user_id = data.get('user_id') what's our variable for user id?
+        user_id = data.get('user_id') #what's our variable for user id?
         age = data.get('age')
         biological_sex = data.get('biological_sex')
             #options: male/female
@@ -80,7 +88,7 @@ def set_goals():
             }
 
         # Enter profile data into database
-         cursor.execute("""
+        cursor.execute("""
             INSERT INTO user_profile 
             (user_id, age, biological_sex, height, weight, goal, preferred_diet, macro_choice, daily_meals, activity_level, weekly_workouts, protein, carbs, fats) 
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
