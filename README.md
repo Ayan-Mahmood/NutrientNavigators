@@ -42,4 +42,9 @@ To a URL like this example: https://nasty-crypt-xgr6rqp6r4v3xpr-5000.app.github.
 
 Run the following commands in the termnal:
 
-kill $(lsof -t -i:5000)
+
+lsof -t -i:5000
+
+Terminal will output list of processed. Get the PID and use in next command.
+
+kill <PID>
