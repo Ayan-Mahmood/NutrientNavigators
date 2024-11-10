@@ -37,7 +37,7 @@ def calculate_standard_macros(goal, diet):
     # numbers need revision
     return {"protein": 30, "carbs": 35, "fats": 35}  # Standard anything diet ratio
 
-@app.route('/set_goals', methods=['POST'])
+@set_nutrition.route('/set_goals', methods=['POST'])
 def set_goals():
     connection = get_db_connection()
     if connection is None:
@@ -79,7 +79,7 @@ def set_goals():
         weight_kg = convert_weight_to_kg(weight)
 
         if macro_choice == "Standard":
-            macros = calculate_standard_macros(goal, diet)
+            macros = calculate_standard_macros(goal, preferred_diet)
         else:
             macros = {
                 "protein": data.get('protein'),
