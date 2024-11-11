@@ -44,10 +44,11 @@ const SetGoalsPage: React.FC<SetGoalsProps> = ({ navigation, route }) => {
   }, [AccountInfo, navigation]);
 
   const handleSubmit = async () => {
+    console.log(AccountInfo);
     setError(""); // Clear previous error message
     try {
       const response = await axios.post(`${flask_api}/set_goals`, {
-        user_id: AccountInfo.email,
+        user_id: AccountInfo.id,
         age,
         biological_sex: sex,
         height,

@@ -1,9 +1,24 @@
-from app import *
+
 from flask import Blueprint, request, jsonify
 from flask_cors import CORS
 from mysql.connector import Error
-
+import mysql.connector
 set_nutrition = Blueprint("set_nutritions_goals", __name__)
+db_config = {
+    'host': 'sql5.freemysqlhosting.net',
+    'user': 'sql5741512',
+    'password': 'cdq3bvxp1c',
+    'database': 'sql5741512'
+}
+
+def get_db_connection():
+    """Establish a connection to the MySQL database."""
+    connection = None
+    try:
+        connection = mysql.connector.connect(**db_config)
+    except Error as e:
+        print(f"Error connecting to MySQL: {e}")
+    return connection
 
 CORS(set_nutrition)
 def convert_height_to_cm(height):
@@ -86,13 +101,13 @@ def set_goals():
                 "carbs": data.get('carbs'),
                 "fats": data.get('fats')
             }
-
+        print((user_id, age, biological_sex, height, weight, goal, preferred_diet, daily_meals, activity_level, weekly_workouts, macros['protein'], macros['carbs'], macros['fats']))
         # Enter profile data into database
         cursor.execute("""
             INSERT INTO user_profile 
             (user_id, age, biological_sex, height, weight, goal, preferred_diet, macro_choice, daily_meals, activity_level, weekly_workouts, protein, carbs, fats) 
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, (user_id, age, biological_sex, height, weight, goal, preferred_diet, daily_meals, activity_level, weekly_workouts, macros['protein'], macros['carbs'], macros['fats']))
+            """, (user_id, age, biological_sex, height, weight, goal, preferred_diet, macro_choice, daily_meals, activity_level, weekly_workouts, macros['protein'], macros['carbs'], macros['fats']))
             #will this create a new user id or enter info into the existing one?
             
         connection.commit()

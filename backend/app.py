@@ -101,7 +101,7 @@ def login():
             print(password)
             stored_password = user[2]  # Assuming password is the third column in the user table)
             if (password == stored_password):
-                return jsonify({"success": True, "message": "Login successful!"}), 200
+                return jsonify({"success": True, "message": "Login successful!", "id": user[0]}), 200
             else:
                 return jsonify({"success": False, "error": "Invalid password!"}), 401
         else:
