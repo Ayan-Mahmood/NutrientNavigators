@@ -9,6 +9,8 @@ import landingPage from "../components/pages/landingPage";
 import HomePage from "../components/pages/homePage";
 import UploadScreen from "../components/pages/uploadScreen";
 import SetGoalsPage from "../components/pages/SetGoalsPage";
+import ViewUserProfile from "../components/pages/viewUserProfile";
+import EditUserProfile from "../components/pages/editUserProfile";
 // import PredictionScreen from "../components/pages/predictionScreen";
 // import OverrideScreen from "../components/pages/overrideScreen";
 
@@ -21,6 +23,8 @@ export type RootStackParamList = {
   MealLogger: { AccountInfo: { id: string; email: string } };
   ProgressPage: { AccountInfo: { id: string; email: string } };
   SetGoalsPage: { AccountInfo: { id: string; email: string } };
+  ViewUserProfile: { AccountInfo: { id: string; email: string } };
+  EditUserProfile: { AccountInfo: { id: string; email: string } };
   Upload: undefined;
   Prediction: { foodItems: { name: string; confidence: number }[] };
   Override: { originalFood: string };
@@ -87,6 +91,16 @@ export default function App() {
           options={{ title: "Set Goals" }}
           name="SetGoalsPage"
           component={SetGoalsPage}
+        />
+        <Stack.Screen
+          options={{ title: "Set Goals" }}
+          name="ViewUserProfile"
+          component={ViewUserProfile}
+        />
+        <Stack.Screen
+          options={{ title: "Set Goals" }}
+          name="EditUserProfile"
+          component={EditUserProfile}
         />
         {/* <Stack.Screen
           options={{ title: "Prediction Results" }}

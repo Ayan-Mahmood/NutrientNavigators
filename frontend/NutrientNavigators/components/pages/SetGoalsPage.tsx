@@ -20,7 +20,7 @@ type SetGoalsProps = StackScreenProps<RootStackParamList, "SetGoalsPage">;
 
 const SetGoalsPage: React.FC<SetGoalsProps> = ({ navigation, route }) => {
   const { AccountInfo } = route.params;
-
+  const [name, setName] = useState("");
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
   const [goal, setGoal] = useState("");
@@ -49,6 +49,7 @@ const SetGoalsPage: React.FC<SetGoalsProps> = ({ navigation, route }) => {
     try {
       const response = await axios.post(`${flask_api}/set_goals`, {
         user_id: AccountInfo.id,
+        name: name,
         age,
         biological_sex: sex,
         height,
@@ -63,12 +64,20 @@ const SetGoalsPage: React.FC<SetGoalsProps> = ({ navigation, route }) => {
 
       if (response.data.success) {
         Alert.alert("Success", response.data.message);
+        navigation.navigate("HomePage", { AccountInfo });
       } else {
         setError(response.data.error || "Failed to set goals.");
       }
     } catch (err) {
       if (err.response?.data?.error) {
-        setError(err.response.data.error);
+        if (err.response?.data?.error.includes("Duplicate")) {
+          //maybe make them go to edit profile page
+          setError(
+            "This User already has goals set. Please use the Edit Profile page to update goals."
+          );
+        } else {
+          setError(err.response.data.error);
+        }
       } else {
         setError("Unable to set goals. Please try again later.");
       }
@@ -77,6 +86,14 @@ const SetGoalsPage: React.FC<SetGoalsProps> = ({ navigation, route }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.label}>Name (Please Enter your Full Name)</Text>
+      <TextInput
+        style={styles.input}
+        value={name}
+        onChangeText={setName}
+        placeholder="Enter Name"
+      />
+
       <Text style={styles.label}>Height (e.g., 5ft 10in or 180cm)</Text>
       <TextInput
         style={styles.input}

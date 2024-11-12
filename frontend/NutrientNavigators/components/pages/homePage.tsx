@@ -32,11 +32,14 @@ const HomePage: React.FC<HomePageProps> = ({ navigation, route }) => {
           />
         </View>
 
-        {/* View Progress Button */}
+        {/* WE ARE GOING TO ADD AN EDIT GOALS PAGE HERE*/}
+
         <View style={styles.buttonSpacing}>
           <Button
-            title="Set Your Personal Goals"
-            onPress={() => navigation.navigate("SetGoalsPage", { AccountInfo })}
+            title="View Profile"
+            onPress={() =>
+              navigation.navigate("ViewUserProfile", { AccountInfo })
+            }
           />
         </View>
 

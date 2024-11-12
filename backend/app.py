@@ -116,5 +116,40 @@ def login():
         if connection is not None:
             connection.close()
 
+@app.route('/get_user_profile', methods=['GET'])
+def get_user_profile():
+    """Fetch user profile data based on user ID."""
+    # Get the user ID from the query parameters
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify({"success": False, "error": "User ID is required"}), 400
+
+    # Connect to the database
+    connection = get_db_connection()
+    if connection is None:
+        return jsonify({"success": False, "error": "Database connection failed"}), 500
+    cursor = connection.cursor(dictionary=True)  # Use dictionary=True for column names in results
+
+    try:
+        # Query the database for the user's profile data
+        cursor.execute("SELECT name, age, biological_sex, height, weight, goal FROM user_profile WHERE user_id = %s", (user_id,))
+        user_profile = cursor.fetchone()
+        user_profile["id"] = user_id
+        # If no user is found with the given ID
+        if user_profile is None:
+            return jsonify({"success": False, "error": "User not found"}), 404
+
+        return jsonify({"success": True, "user_profile": user_profile}), 200
+
+    except Error as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if connection is not None:
+            connection.close()
+
+
 if __name__ == '__main__':
     app.run(debug=True)

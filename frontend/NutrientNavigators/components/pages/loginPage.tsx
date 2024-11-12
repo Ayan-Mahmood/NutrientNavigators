@@ -28,13 +28,25 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
 
       if (response.data.success) {
         console.log("Login is successful!");
-        console.log(response)
-        navigation.navigate("HomePage", {
-          AccountInfo: {
-            id: response.data.id,
-            email: email,
-          },
-        });
+        console.log(response);
+
+        try {
+          const { data } = await axios.get(`${flask_api}/get_user_profile`, {
+            params: {
+              user_id: response.data.id,
+            },
+          });
+          navigation.navigate("HomePage", {
+            AccountInfo: data,
+          });
+        } catch (error) {
+          //route user straight to setGoalsPage
+          if (error.response.data.error == "User not found") {
+            navigation.navigate("SetGoalsPage", { AccountInfo: response.data });
+          } else {
+            setError("Login failed.");
+          }
+        }
       } else {
         setError(response.data.error || "Login failed.");
       }
