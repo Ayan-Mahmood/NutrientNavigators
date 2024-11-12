@@ -67,8 +67,9 @@ def register():
             "INSERT INTO Users (email, password) VALUES (%s, %s)",
             (email, password)
         )
+        user_id = cursor.lastrowid
         connection.commit()
-        return jsonify({"success": True, "message": "User registered successfully!"}), 201
+        return jsonify({"success": True, "message": "User registered successfully!", "id": user_id}), 201
     except Error as e:
         return jsonify({"success": False, "error": str(e)}), 500
     finally:

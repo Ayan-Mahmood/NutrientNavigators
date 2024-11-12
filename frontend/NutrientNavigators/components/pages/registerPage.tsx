@@ -22,12 +22,7 @@ const Register: React.FC<RegisterProps> = ({ navigation }) => {
 
       if (response.data.success) {
         console.log("Registration is successful!");
-        navigation.navigate("HomePage", {
-          AccountInfo: {
-            id: response.data.id,
-            email: email,
-          },
-        });
+        navigation.navigate("SetGoalsPage", { AccountInfo: response.data });
       } else {
         setError(response.data.error || "Registration failed.");
       }
