@@ -17,6 +17,10 @@ MODEL_ID = 'food-item-recognition'
 MODEL_VERSION_ID = '1d5fd481e0cf4826aa72ec3ff049e044'
 CLARIFAI_URL = f"https://api.clarifai.com/v2/models/{MODEL_ID}/versions/{MODEL_VERSION_ID}/outputs"
 
+# USDA API Configuration
+USDA_API_KEY = 'wS0NDbmfrOpcZDzyrgjkUY0lWhNSQB5ggkEzZhzT'
+USDA_API_URL = "https://api.nal.usda.gov/fdc/v1/foods/search"
+
 db_config = {
     'host': 'sql5.freemysqlhosting.net',
     'user': 'sql5741512',
@@ -123,4 +127,39 @@ def override_food():
         cursor.close()
         connection.close()
 
+
+# Route for providing nutritional data for a hardcoded food item (e.g., pizza)
+@photo_recognition.route('/get_nutritional_data', methods=['GET'])
+def get_nutritional_data():
+    food_item = "pizza"
+
+    # Prepare the request to the USDA FoodData Central API
+    params = {
+        "query": food_item,
+        "pageSize": 1,
+        "api_key": USDA_API_KEY
+    }
+
+    try:
+        response = requests.get(USDA_API_URL, params=params)
+        response.raise_for_status()
+        data = response.json()
+
+        # Extract specific nutritional information if available
+        if data and data.get("foods"):
+            food_data = data["foods"][0]
+            nutrients = {
+                "description": food_data.get("description"),
+                "calories": next((nutrient["value"] for nutrient in food_data["foodNutrients"] if nutrient["nutrientName"] == "Energy"), "N/A"),
+                "protein": next((nutrient["value"] for nutrient in food_data["foodNutrients"] if nutrient["nutrientName"] == "Protein"), "N/A"),
+                "fat": next((nutrient["value"] for nutrient in food_data["foodNutrients"] if nutrient["nutrientName"] == "Total lipid (fat)"), "N/A"),
+                "carbohydrates": next((nutrient["value"] for nutrient in food_data["foodNutrients"] if nutrient["nutrientName"] == "Carbohydrate, by difference"), "N/A")
+            }
+            return jsonify({"food": nutrients}), 200
+        else:
+            return jsonify({"error": "No data found for the given food item"}), 404
+
+    except requests.RequestException as e:
+        print(f"Error fetching data from USDA API: {e}")
+        return jsonify({"error": "Failed to fetch nutritional data"}), 500
 
