@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import axios from "axios";
 const flask_api = "http://127.0.0.1:5000";
-
 interface LoginProps {
   navigation: any;
 }
@@ -41,7 +40,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
           });
         } catch (error) {
           //route user straight to setGoalsPage
-          if (error.response.data.error == "User not found") {
+          if (error) {
             navigation.navigate("SetGoalsPage", { AccountInfo: response.data });
           } else {
             setError("Login failed.");
