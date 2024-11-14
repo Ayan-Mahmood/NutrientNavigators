@@ -10,17 +10,22 @@ import {
   ActivityIndicator,
   TextInput,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+
+interface FoodItem {
+  name: string;
+  confidence: number;
+  isSelected: boolean;
+}
 
 const App: React.FC = () => {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [disableButton, setDisableButton] = useState<boolean>(false);
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [recognizedFood, setRecognizedFood] = useState<
-    Array<{ name: string; confidence: number }>
-  >([]);
+  const [recognizedFood, setRecognizedFood] = useState<FoodItem[]>([]);
   const [foodInput, setFoodInput] = useState<string>(""); // Input for food item
   const [nutrition, setNutrition] = useState<{
     description: string;
@@ -105,7 +110,12 @@ const App: React.FC = () => {
       if (responseJson.error) {
         Alert.alert("Error", responseJson.error);
       } else {
-        setRecognizedFood(responseJson.recognized_food);
+        setRecognizedFood(
+          responseJson.recognized_food.map((item: { name: string; confidence: number }) => ({
+            ...item,
+            isSelected: false,
+          }))
+        );
         Alert.alert("Success", "Image uploaded and processed successfully.");
       }
     } catch (error) {
@@ -114,6 +124,14 @@ const App: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSelectionChange = (index: number) => {
+    setRecognizedFood((prev) =>
+      prev.map((item, i) =>
+        i === index ? { ...item, isSelected: !item.isSelected } : item
+      )
+    );
   };
 
   const getNutritionalData = async () => {
@@ -135,6 +153,43 @@ const App: React.FC = () => {
     } catch (error) {
       console.error("Error fetching nutritional data:", error);
       Alert.alert("Error", "Error fetching nutritional data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async () => {
+    const selectedFood = recognizedFood.filter((item) => item.isSelected).map((item) => item.name);
+    if (foodInput.trim()) {
+      selectedFood.push(foodInput.trim());
+    }
+
+    if (selectedFood.length === 0) {
+      Alert.alert("Error", "Please select or input at least one food item.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await fetch("http://127.0.0.1:5000/save_log", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ foodLog: selectedFood }),
+      });
+
+      if (response.ok) {
+        Alert.alert("Success", "Food log saved successfully.");
+        setFoodInput("");
+        setRecognizedFood([]);
+        setNutrition(null);
+      } else {
+        throw new Error("Failed to save log.");
+      }
+    } catch (error) {
+      console.error("Error saving log:", error);
+      Alert.alert("Error", "Failed to save the food log.");
     } finally {
       setLoading(false);
     }
@@ -163,9 +218,22 @@ const App: React.FC = () => {
               <View style={{ marginTop: 20 }}>
                 <Text style={styles.title}>Recognized Food Items:</Text>
                 {recognizedFood.map((item, index) => (
-                  <Text key={index} style={styles.foodItem}>
-                    {index + 1}. {item.name} (Confidence: {(item.confidence * 100).toFixed(2)}%)
-                  </Text>
+                  <View key={index} style={styles.foodItemContainer}>
+                    <TouchableOpacity
+                      style={styles.checkbox}
+                      onPress={() => handleSelectionChange(index)}
+                    >
+                      <View
+                        style={[
+                          styles.checkboxInner,
+                          item.isSelected && styles.checkboxChecked,
+                        ]}
+                      />
+                    </TouchableOpacity>
+                    <Text style={styles.foodItem}>
+                      {index + 1}. {item.name} (Confidence: {(item.confidence * 100).toFixed(2)}%)
+                    </Text>
+                  </View>
                 ))}
               </View>
             )}
@@ -186,6 +254,7 @@ const App: React.FC = () => {
                 <Text>Carbohydrates: {nutrition.carbohydrates}g</Text>
               </View>
             )}
+            <Button title="Submit" onPress={handleSubmit} />
           </View>
         ) : (
           <Text>Camera Roll Permission Required!</Text>
@@ -213,9 +282,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
   },
+  foodItemContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 5,
+  },
   foodItem: {
     fontSize: 16,
-    marginVertical: 5,
+    marginLeft: 5,
   },
   input: {
     height: 40,
@@ -224,5 +298,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     width: "80%",
     marginVertical: 10,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 2,
+    borderColor: "#000",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
+  },
+  checkboxInner: {
+    width: 12,
+    height: 12,
+  },
+  checkboxChecked: {
+    backgroundColor: "#000",
   },
 });
