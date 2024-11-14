@@ -4,6 +4,7 @@ import mysql.connector
 from mysql.connector import Error
 from werkzeug.security import generate_password_hash, check_password_hash
 from photo_recognition import photo_recognition
+from allow_users import allow_users
 from set_nutrition_goals import set_nutrition
 
 app = Flask(__name__)
@@ -12,6 +13,7 @@ CORS(app, resources={r"/*": {"origins": "http://localhost:19006"}})
 # Register the Blueprint with an optional URL prefix
 app.register_blueprint(photo_recognition)
 app.register_blueprint(set_nutrition)
+app.register_blueprint(allow_users)
 
 db_config = {
     'host': 'sql5.freemysqlhosting.net',  # Your MySQL host
