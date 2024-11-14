@@ -9,6 +9,7 @@ import {
   View,
   ActivityIndicator,
   Platform,
+  TextInput,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 
@@ -20,6 +21,14 @@ const App: React.FC = () => {
   const [recognizedFood, setRecognizedFood] = useState<
     Array<{ name: string; confidence: number }>
   >([]);
+  const [foodInput, setFoodInput] = useState<string>(""); // Input for food item
+  const [nutrition, setNutrition] = useState<{
+    description: string;
+    calories: string;
+    protein: string;
+    fat: string;
+    carbohydrates: string;
+  } | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -28,11 +37,10 @@ const App: React.FC = () => {
     })();
   }, []);
 
-  // convert the base64 string to blob
+  // Convert base64 string to blob
   const base64ToBlob = (base64: string, mimeType: string) => {
     const byteCharacters = atob(base64);
     const byteArrays = [];
-
     for (let offset = 0; offset < byteCharacters.length; offset += 512) {
       const slice = byteCharacters.slice(offset, offset + 512);
       const byteNumbers = new Array(slice.length);
@@ -42,7 +50,6 @@ const App: React.FC = () => {
       const byteArray = new Uint8Array(byteNumbers);
       byteArrays.push(byteArray);
     }
-
     return new Blob(byteArrays, { type: mimeType });
   };
 
@@ -79,7 +86,6 @@ const App: React.FC = () => {
 
   const uploadPhoto = async (imageBlob: Blob) => {
     setLoading(true);
-
     const formData = new FormData();
     formData.append("image", imageBlob, "photo.jpg");
 
@@ -107,6 +113,30 @@ const App: React.FC = () => {
     }
   };
 
+  const getNutritionalData = async () => {
+    if (!foodInput) {
+      Alert.alert("Error", "Please enter a food item.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await fetch(`http://127.0.0.1:5000/get_nutritional_data?food_item=${foodInput}`);
+      const responseJson = await response.json();
+
+      if (responseJson.error) {
+        Alert.alert("Error", responseJson.error);
+      } else {
+        setNutrition(responseJson.food);
+      }
+    } catch (error) {
+      console.error("Error fetching nutritional data:", error);
+      Alert.alert("Error", "Error fetching nutritional data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {hasPermission ? (
@@ -122,7 +152,6 @@ const App: React.FC = () => {
                 source={{ uri: imageUri }}
                 style={{ width: 200, height: 200, marginVertical: 10 }}
               />
-              {/* <Button title="Upload Image" onPress={() => uploadPhoto} /> */}
             </View>
           )}
           {loading && <ActivityIndicator size="large" color="#0000ff" />}
@@ -131,10 +160,26 @@ const App: React.FC = () => {
               <Text style={styles.title}>Recognized Food Items:</Text>
               {recognizedFood.map((item, index) => (
                 <Text key={index} style={styles.foodItem}>
-                  {index + 1}. {item.name} (Confidence:{" "}
-                  {(item.confidence * 100).toFixed(2)}%)
+                  {index + 1}. {item.name} (Confidence: {(item.confidence * 100).toFixed(2)}%)
                 </Text>
               ))}
+            </View>
+          )}
+          <TextInput
+            style={styles.input}
+            placeholder="Enter food item for nutritional data"
+            value={foodInput}
+            onChangeText={setFoodInput}
+          />
+          <Button title="Get Nutritional Data" onPress={getNutritionalData} />
+          {nutrition && (
+            <View style={{ marginTop: 20 }}>
+              <Text style={styles.title}>Nutritional Information:</Text>
+              <Text>Description: {nutrition.description}</Text>
+              <Text>Calories: {nutrition.calories}</Text>
+              <Text>Protein: {nutrition.protein}g</Text>
+              <Text>Fat: {nutrition.fat}g</Text>
+              <Text>Carbohydrates: {nutrition.carbohydrates}g</Text>
             </View>
           )}
         </View>
@@ -163,5 +208,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginVertical: 5,
   },
+  input: {
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    width: "80%",
+    marginVertical: 10,
+  },
 });
-
