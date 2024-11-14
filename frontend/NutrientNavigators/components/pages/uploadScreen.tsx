@@ -8,8 +8,8 @@ import {
   Image,
   View,
   ActivityIndicator,
-  Platform,
   TextInput,
+  ScrollView,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 
@@ -37,10 +37,11 @@ const App: React.FC = () => {
     })();
   }, []);
 
-  // Convert base64 string to blob
+  // Convert base64 to blob
   const base64ToBlob = (base64: string, mimeType: string) => {
     const byteCharacters = atob(base64);
     const byteArrays = [];
+
     for (let offset = 0; offset < byteCharacters.length; offset += 512) {
       const slice = byteCharacters.slice(offset, offset + 512);
       const byteNumbers = new Array(slice.length);
@@ -50,6 +51,7 @@ const App: React.FC = () => {
       const byteArray = new Uint8Array(byteNumbers);
       byteArrays.push(byteArray);
     }
+
     return new Blob(byteArrays, { type: mimeType });
   };
 
@@ -86,6 +88,7 @@ const App: React.FC = () => {
 
   const uploadPhoto = async (imageBlob: Blob) => {
     setLoading(true);
+
     const formData = new FormData();
     formData.append("image", imageBlob, "photo.jpg");
 
@@ -139,53 +142,55 @@ const App: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {hasPermission ? (
-        <View style={{ alignItems: "center" }}>
-          <Button
-            title="Pick From Gallery"
-            disabled={disableButton}
-            onPress={pickImage}
-          />
-          {imageUri && (
-            <View>
-              <Image
-                source={{ uri: imageUri }}
-                style={{ width: 200, height: 200, marginVertical: 10 }}
-              />
-            </View>
-          )}
-          {loading && <ActivityIndicator size="large" color="#0000ff" />}
-          {recognizedFood.length > 0 && (
-            <View style={{ marginTop: 20 }}>
-              <Text style={styles.title}>Recognized Food Items:</Text>
-              {recognizedFood.map((item, index) => (
-                <Text key={index} style={styles.foodItem}>
-                  {index + 1}. {item.name} (Confidence: {(item.confidence * 100).toFixed(2)}%)
-                </Text>
-              ))}
-            </View>
-          )}
-          <TextInput
-            style={styles.input}
-            placeholder="Enter food item for nutritional data"
-            value={foodInput}
-            onChangeText={setFoodInput}
-          />
-          <Button title="Get Nutritional Data" onPress={getNutritionalData} />
-          {nutrition && (
-            <View style={{ marginTop: 20 }}>
-              <Text style={styles.title}>Nutritional Information:</Text>
-              <Text>Description: {nutrition.description}</Text>
-              <Text>Calories: {nutrition.calories}</Text>
-              <Text>Protein: {nutrition.protein}g</Text>
-              <Text>Fat: {nutrition.fat}g</Text>
-              <Text>Carbohydrates: {nutrition.carbohydrates}g</Text>
-            </View>
-          )}
-        </View>
-      ) : (
-        <Text>Camera Roll Permission Required!</Text>
-      )}
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {hasPermission ? (
+          <View style={{ alignItems: "center" }}>
+            <Button
+              title="Pick From Gallery"
+              disabled={disableButton}
+              onPress={pickImage}
+            />
+            {imageUri && (
+              <View>
+                <Image
+                  source={{ uri: imageUri }}
+                  style={{ width: 200, height: 200, marginVertical: 10 }}
+                />
+              </View>
+            )}
+            {loading && <ActivityIndicator size="large" color="#0000ff" />}
+            {recognizedFood.length > 0 && (
+              <View style={{ marginTop: 20 }}>
+                <Text style={styles.title}>Recognized Food Items:</Text>
+                {recognizedFood.map((item, index) => (
+                  <Text key={index} style={styles.foodItem}>
+                    {index + 1}. {item.name} (Confidence: {(item.confidence * 100).toFixed(2)}%)
+                  </Text>
+                ))}
+              </View>
+            )}
+            <TextInput
+              style={styles.input}
+              placeholder="Enter food item for nutritional data"
+              value={foodInput}
+              onChangeText={setFoodInput}
+            />
+            <Button title="Get Nutritional Data" onPress={getNutritionalData} />
+            {nutrition && (
+              <View style={{ marginTop: 20 }}>
+                <Text style={styles.title}>Nutritional Information:</Text>
+                <Text>Description: {nutrition.description}</Text>
+                <Text>Calories: {nutrition.calories}</Text>
+                <Text>Protein: {nutrition.protein}g</Text>
+                <Text>Fat: {nutrition.fat}g</Text>
+                <Text>Carbohydrates: {nutrition.carbohydrates}g</Text>
+              </View>
+            )}
+          </View>
+        ) : (
+          <Text>Camera Roll Permission Required!</Text>
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -196,8 +201,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    justifyContent: "center",
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    alignItems: "center",
     paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   title: {
     fontSize: 20,
