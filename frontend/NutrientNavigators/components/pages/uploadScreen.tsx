@@ -9,13 +9,8 @@ import {
   View,
   ActivityIndicator,
   Platform,
-  TextInput,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import Checkbox from '@react-native-community/checkbox';
-import axios from 'axios';
-
-const flask_api = "http://127.0.0.1:5000";
 
 const App: React.FC = () => {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -25,8 +20,6 @@ const App: React.FC = () => {
   const [recognizedFood, setRecognizedFood] = useState<
     Array<{ name: string; confidence: number }>
   >([]);
-  const [selectedFoods, setSelectedFoods] = useState<string[]>([]);
-  const [customFood, setCustomFood] = useState<string>("");
 
   useEffect(() => {
     (async () => {
@@ -84,22 +77,6 @@ const App: React.FC = () => {
     }
   };
 
-  const takePhoto = async() => {
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 1,
-    });
-    
-    if (!result.canceled && result.assets && result.assets.length > 0) {
-      const asset = result.assets[0];
-      setImageUri(asset.uri);  
-      const response = await fetch(asset.uri);
-      const blob = await response.blob();
-      await uploadPhoto(blob);  
-    }
-  };
-
   const uploadPhoto = async (imageBlob: Blob) => {
     setLoading(true);
 
@@ -130,32 +107,6 @@ const App: React.FC = () => {
     }
   };
 
-  const handleSelectFood = (food: string) => {
-    if (selectedFoods.includes(food)) {
-      setSelectedFoods(selectedFoods.filter(item => item !== food));
-    } else {
-      setSelectedFoods([...selectedFoods, food]);
-    }
-  };
-
-  const handleSubmit = async() => {
-    const logData = customFood ? [...selectedFoods, customFood] : selectedFoods;
-
-    if (logData.length === 0) {
-      Alert.alert("Error", "Please select or enter at least one food item.");
-      return;
-    }
-
-    try {
-      await axios.post(`{flask_api}/log_food`, { foods: logData });
-      Alert.alert("Succes", "Food log saved successfully!");
-      setSelectedFoods([]);
-      setCustomFood("");
-    } catch (error) {
-      console.error("Error saving food log:", error);
-      Alert.alert("Error", "Failed to save the food log.");
-    }
-  };
   return (
     <SafeAreaView style={styles.container}>
       {hasPermission ? (
@@ -164,10 +115,6 @@ const App: React.FC = () => {
             title="Pick From Gallery"
             disabled={disableButton}
             onPress={pickImage}
-          />
-          <Button
-            title="Take a Photo"
-            onPress={takePhoto}
           />
           {imageUri && (
             <View>
@@ -183,23 +130,11 @@ const App: React.FC = () => {
             <View style={{ marginTop: 20 }}>
               <Text style={styles.title}>Recognized Food Items:</Text>
               {recognizedFood.map((item, index) => (
-                <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5 }}>
-                  <Checkbox
-                    value={selectedFoods.includes(item.name)}
-                    onValueChange={() => handleSelectFood(item.name)}
-                  />
-                  <Text style={styles.foodItem}>
-                    {index + 1}. {item.name} (Confidence: {(item.confidence * 100).toFixed(2)}%)
-                  </Text>
-                </View>
+                <Text key={index} style={styles.foodItem}>
+                  {index + 1}. {item.name} (Confidence:{" "}
+                  {(item.confidence * 100).toFixed(2)}%)
+                </Text>
               ))}
-              <TextInput
-                style={styles.input}
-                placeholder="Enter custom food"
-                value={customFood}
-                onChangeText={setCustomFood}
-              />
-              <Button title="Submit Food Log" onPress={handleSubmit} />
             </View>
           )}
         </View>
@@ -227,13 +162,6 @@ const styles = StyleSheet.create({
   foodItem: {
     fontSize: 16,
     marginVertical: 5,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 8,
-    width: "100%",
-    marginVertical: 10,
   },
 });
 
