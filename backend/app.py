@@ -5,6 +5,7 @@ from mysql.connector import Error
 from werkzeug.security import generate_password_hash, check_password_hash
 from photo_recognition import photo_recognition
 from set_nutrition_goals import set_nutrition
+from meal_suggestions import meal_suggestions
 
 app = Flask(__name__)
 #CORS(app, resources={r"/*": {"origins": "*"}})
@@ -12,6 +13,7 @@ CORS(app, resources={r"/*": {"origins": "http://localhost:19006"}})
 # Register the Blueprint with an optional URL prefix
 app.register_blueprint(photo_recognition)
 app.register_blueprint(set_nutrition)
+app.register_blueprint(meal_suggestions)
 
 db_config = {
     'host': 'sql5.freemysqlhosting.net',  # Your MySQL host
@@ -151,6 +153,89 @@ def get_user_profile():
         if connection is not None:
             connection.close()
 
+@app.route('/set_user_goals', methods=['POST'])
+def set_user_goals():
+    """Set or update user goals."""
+    connection = get_db_connection()
+    if connection is None:
+        return jsonify({"success": False, "error": "Database connection failed"}), 500
+    cursor = connection.cursor()
+
+    try:
+        data = request.get_json()
+        user_id = data.get('UserID')
+        name = data.get('Name')
+        age = data.get('Age')
+        biological_sex = data.get('BiologicalSex')
+        height = data.get('Height')
+        weight = data.get('Weight')
+        goal = data.get('Goal')
+        preferred_diet = data.get('PreferredDiet')
+        macro_choice = data.get('MacroChoice')
+        daily_meals = data.get('DailyMeals')
+        activity_level = data.get('ActivityLevel')
+        weekly_workouts = data.get('WeeklyWorkouts')
+
+        # Check if the user already has goals set
+        cursor.execute("SELECT * FROM UserGoals WHERE UserID = %s", (user_id,))
+        existing_goals = cursor.fetchone()
+
+        if existing_goals:
+            # Update the existing goals
+            cursor.execute("""
+                UPDATE UserGoals
+                SET Name = %s, Age = %s, BiologicalSex = %s, Height = %s, Weight = %s, Goal = %s,
+                    PreferredDiet = %s, MacroChoice = %s, DailyMeals = %s, ActivityLevel = %s, WeeklyWorkouts = %s
+                WHERE UserID = %s
+            """, (name, age, biological_sex, height, weight, goal, preferred_diet, macro_choice, daily_meals, activity_level, weekly_workouts, user_id))
+        else:
+            # Insert new goals
+            cursor.execute("""
+                INSERT INTO UserGoals (UserID, Name, Age, BiologicalSex, Height, Weight, Goal, PreferredDiet, MacroChoice, DailyMeals, ActivityLevel, WeeklyWorkouts)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (user_id, name, age, biological_sex, height, weight, goal, preferred_diet, macro_choice, daily_meals, activity_level, weekly_workouts))
+
+        connection.commit()
+        return jsonify({"success": True, "message": "User goals set successfully!"}), 201
+
+    except Error as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if connection is not None:
+            connection.close()
+
+@app.route('/get_user_goals', methods=['GET'])
+def get_user_goals():
+    """Fetch user goals by UserID."""
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify({"success": False, "error": "User ID is required"}), 400
+
+    connection = get_db_connection()
+    if connection is None:
+        return jsonify({"success": False, "error": "Database connection failed"}), 500
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        cursor.execute("SELECT * FROM UserGoals WHERE UserID = %s", (user_id,))
+        user_goals = cursor.fetchone()
+
+        if user_goals is None:
+            return jsonify({"success": False, "error": "User goals not found"}), 404
+
+        return jsonify({"success": True, "user_goals": user_goals}), 200
+
+    except Error as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if connection is not None:
+            connection.close()
 
 if __name__ == '__main__':
     app.run(debug=True)
