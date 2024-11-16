@@ -13,13 +13,11 @@ import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { StackScreenProps } from "@react-navigation/stack";
 import { RootStackParamList } from "../../app/index";
-
 const flask_api = "http://127.0.0.1:5000";
 
 type SetGoalsProps = StackScreenProps<RootStackParamList, "SetGoalsPage">;
 
 const SetGoalsPage: React.FC<SetGoalsProps> = ({ navigation, route }) => {
-  const { AccountInfo } = route.params;
   const [name, setName] = useState("");
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
@@ -33,8 +31,10 @@ const SetGoalsPage: React.FC<SetGoalsProps> = ({ navigation, route }) => {
   const [weeklyWorkouts, setWeeklyWorkouts] = useState("");
   const [error, setError] = useState("");
 
+  const AccountInfo = route.params.AccountInfo;
+
   useEffect(() => {
-    if (!AccountInfo || !AccountInfo.email) {
+    if (!AccountInfo) {
       Alert.alert(
         "Unauthorized Access",
         "You must be logged in to access this page.",
@@ -64,7 +64,12 @@ const SetGoalsPage: React.FC<SetGoalsProps> = ({ navigation, route }) => {
 
       if (response.data.success) {
         Alert.alert("Success", response.data.message);
-        navigation.navigate("HomePage", { AccountInfo });
+        const { data } = await axios.get(`${flask_api}/get_user_profile`, {
+          params: {
+            user_id: AccountInfo.id,
+          },
+        });
+        navigation.navigate("HomePage", { AccountInfo: data });
       } else {
         setError(response.data.error || "Failed to set goals.");
       }

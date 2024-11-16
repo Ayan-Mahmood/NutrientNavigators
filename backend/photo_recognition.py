@@ -13,8 +13,8 @@ CORS(photo_recognition)
 PAT = 'fe940b734e624ecd8b639f32e6e45fe3'
 USER_ID = 'clarifai'
 APP_ID = 'main'
-MODEL_ID = 'food-item-recognition'
-MODEL_VERSION_ID = '1d5fd481e0cf4826aa72ec3ff049e044'
+MODEL_ID = 'food-item-v1-recognition'
+MODEL_VERSION_ID = 'dfebc169854e429086aceb8368662641'
 CLARIFAI_URL = f"https://api.clarifai.com/v2/models/{MODEL_ID}/versions/{MODEL_VERSION_ID}/outputs"
 
 # USDA API Configuration
@@ -128,10 +128,11 @@ def override_food():
         connection.close()
 
 
-# Route for providing nutritional data for a hardcoded food item (e.g., pizza)
+# Route for providing nutritional data based on user input
 @photo_recognition.route('/get_nutritional_data', methods=['GET'])
 def get_nutritional_data():
-    food_item = "pizza"
+    # Retrieve the food item from the query parameter
+    food_item = request.args.get("food_item", default="pizza", type=str)
 
     # Prepare the request to the USDA FoodData Central API
     params = {
@@ -162,4 +163,5 @@ def get_nutritional_data():
     except requests.RequestException as e:
         print(f"Error fetching data from USDA API: {e}")
         return jsonify({"error": "Failed to fetch nutritional data"}), 500
-
+    
+    

@@ -21,7 +21,7 @@ const HomePage: React.FC<HomePageProps> = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.welcome}>Welcome back, {AccountInfo.email}!</Text>
+      <Text style={styles.welcome}>Welcome back, {AccountInfo.user_profile.name}!</Text>
 
       <View style={styles.buttonContainer}>
         {/* Log Meal Button to Navigate to Upload Screen */}

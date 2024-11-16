@@ -129,4 +129,4 @@ def set_goals():
             connection.close()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    set_goals.run(debug=True)

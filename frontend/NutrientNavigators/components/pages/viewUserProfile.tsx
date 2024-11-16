@@ -17,14 +17,18 @@ const ViewUserProfile: React.FC<ViewUserProfileProps> = ({
   return (
     <View style={styles.container}>
       <Text style={styles.title}>User Profile</Text>
-      <Text style={styles.info}>Name: {AccountInfo.name}</Text>
-      <Text style={styles.info}>Age: {AccountInfo.age}</Text>
+      <Text style={styles.info}>Name: {AccountInfo.user_profile.name}</Text>
+      <Text style={styles.info}>Age: {AccountInfo.user_profile.age}</Text>
       <Text style={styles.info}>
-        Biological Sex: {AccountInfo.biological_sex}
+        Biological Sex: {AccountInfo.user_profile.biological_sex}
       </Text>
-      <Text style={styles.info}>Height: {AccountInfo.height} cm</Text>
-      <Text style={styles.info}>Weight: {AccountInfo.weight} kg</Text>
-      <Text style={styles.info}>Goal: {AccountInfo.goal}</Text>
+      <Text style={styles.info}>
+        Height: {AccountInfo.user_profile.height}
+      </Text>
+      <Text style={styles.info}>
+        Weight: {AccountInfo.user_profile.weight}
+      </Text>
+      <Text style={styles.info}>Goal: {AccountInfo.user_profile.goal}</Text>
 
       <Button
         title="Edit Profile"

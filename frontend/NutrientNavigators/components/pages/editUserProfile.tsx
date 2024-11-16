@@ -14,17 +14,18 @@ const EditUserProfile: React.FC<EditUserProfileProps> = ({
 }) => {
   const { AccountInfo } = route.params;
 
-  const [name, setName] = useState(AccountInfo.name);
-  const [age, setAge] = useState(AccountInfo.age);
+  const [name, setName] = useState(AccountInfo.user_profile.name);
+  const [age, setAge] = useState(AccountInfo.user_profile.age);
   const [biologicalSex, setBiologicalSex] = useState(
-    AccountInfo.biological_sex
+    AccountInfo.user_profile.biological_sex
   );
-  const [height, setHeight] = useState(AccountInfo.height);
-  const [weight, setWeight] = useState(AccountInfo.weight);
-  const [goal, setGoal] = useState(AccountInfo.goal);
+  const [height, setHeight] = useState(AccountInfo.user_profile.height);
+  const [weight, setWeight] = useState(AccountInfo.user_profile.weight);
+  const [goal, setGoal] = useState(AccountInfo.user_profile.goal);
 
   const handleSave = () => {
     // Implement save functionality here
+    // For now, just show an alert and navigate back, however we need to make a patch request
     Alert.alert(
       "Profile Updated",
       "Your profile has been updated successfully."

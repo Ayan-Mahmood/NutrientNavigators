@@ -13,18 +13,26 @@ import ViewUserProfile from "../components/pages/viewUserProfile";
 import EditUserProfile from "../components/pages/editUserProfile";
 // import PredictionScreen from "../components/pages/predictionScreen";
 // import OverrideScreen from "../components/pages/overrideScreen";
-
+type AccountInfo = {
+  age: string;
+  biological_sex: string;
+  goal: string;
+  height: string;
+  id: string;
+  name: string;
+  weight: string;
+};
 export type RootStackParamList = {
   LoginPage: undefined;
   landingPage: undefined;
-  Login: { AccountInfo: { id: string; email: string } };
-  Register: { AccountInfo: { id: string; email: string } };
-  HomePage: { AccountInfo: { id: string; email: string } };
-  MealLogger: { AccountInfo: { id: string; email: string } };
-  ProgressPage: { AccountInfo: { id: string; email: string } };
-  SetGoalsPage: { AccountInfo: { id: string; email: string } };
-  ViewUserProfile: { AccountInfo: { id: string; email: string } };
-  EditUserProfile: { AccountInfo: { id: string; email: string } };
+  Login: AccountInfo;
+  Register: AccountInfo;
+  HomePage: AccountInfo;
+  MealLogger: AccountInfo;
+  ProgressPage: AccountInfo;
+  SetGoalsPage: AccountInfo;
+  ViewUserProfile: AccountInfo;
+  EditUserProfile: AccountInfo;
   Upload: undefined;
   Prediction: { foodItems: { name: string; confidence: number }[] };
   Override: { originalFood: string };
