@@ -5,10 +5,10 @@ from mysql.connector import Error
 import mysql.connector
 set_nutrition = Blueprint("set_nutritions_goals", __name__)
 db_config = {
-    'host': 'sql5.freemysqlhosting.net',
-    'user': 'sql5741512',
-    'password': 'cdq3bvxp1c',
-    'database': 'sql5741512'
+    'host': 'mysql5050.site4now.net',  # Your MySQL host
+    'user': 'a3e518_dietana',  # Your MySQL username
+    'password': 'Nov142024',  # Your MySQL password
+    'database': 'db_a3e518_dietana'  # Your MySQL database name
 }
 
 def get_db_connection():

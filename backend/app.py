@@ -4,20 +4,22 @@ import mysql.connector
 from mysql.connector import Error
 from werkzeug.security import generate_password_hash, check_password_hash
 from photo_recognition import photo_recognition
+from allow_users import allow_users
 from set_nutrition_goals import set_nutrition
 
 app = Flask(__name__)
-#CORS(app, resources={r"/*": {"origins": "*"}})
-CORS(app, resources={r"/*": {"origins": "http://localhost:19006"}})
+CORS(app, resources={r"/*": {"origins": "https://nasty-crypt-xgr6rqp6r4v3xpr-19006.app.github.dev"}})
+#CORS(app, resources={r"/*": {"origins": "http://localhost:19006"}})
 # Register the Blueprint with an optional URL prefix
 app.register_blueprint(photo_recognition)
 app.register_blueprint(set_nutrition)
+app.register_blueprint(allow_users)
 
 db_config = {
-    'host': 'sql5.freemysqlhosting.net',  # Your MySQL host
-    'user': 'sql5741512',  # Your MySQL username
-    'password': 'cdq3bvxp1c',  # Your MySQL password
-    'database': 'sql5741512'  # Your MySQL database name
+    'host': 'mysql5050.site4now.net',  # Your MySQL host
+    'user': 'a3e518_dietana',  # Your MySQL username
+    'password': 'Nov142024',  # Your MySQL password
+    'database': 'db_a3e518_dietana'  # Your MySQL database name
 }
 
 
@@ -153,4 +155,4 @@ def get_user_profile():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+     app.run(debug=True)
