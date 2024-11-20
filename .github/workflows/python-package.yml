@@ -28,9 +28,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install flake8 pytest        
-        pip install flask
-        pip install flask_cors
-        pip install mysql.connector
+        python -m pip install flask
+        python -m pip install flask_cors
+        python -m pip install mysql.connector
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: |
