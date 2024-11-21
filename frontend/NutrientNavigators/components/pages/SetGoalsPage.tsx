@@ -21,14 +21,14 @@ const SetGoalsPage: React.FC<SetGoalsProps> = ({ navigation, route }) => {
   const [name, setName] = useState("");
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
-  const [goal, setGoal] = useState("");
+  const [goal, setGoal] = useState("Lose weight");
   const [age, setAge] = useState("");
-  const [sex, setSex] = useState("");
+  const [sex, setSex] = useState("Male");
   const [dietPreference, setDietPreference] = useState("");
   const [macroChoice, setMacroChoice] = useState("Standard");
   const [dailyMeals, setDailyMeals] = useState("");
-  const [activityLevel, setActivityLevel] = useState("");
-  const [weeklyWorkouts, setWeeklyWorkouts] = useState("");
+  const [activityLevel, setActivityLevel] = useState("Very light");
+  const [weeklyWorkouts, setWeeklyWorkouts] = useState("Very light");
   const [error, setError] = useState("");
 
   const AccountInfo = route.params.AccountInfo;
@@ -50,14 +50,14 @@ const SetGoalsPage: React.FC<SetGoalsProps> = ({ navigation, route }) => {
       const response = await axios.post(`${flask_api}/set_goals`, {
         user_id: AccountInfo.id,
         name: name,
-        age,
+        age: age,
         biological_sex: sex,
-        height,
-        weight,
-        goal,
+        height: height,
+        weight: weight,
+        goal: goal,
         preferred_diet: dietPreference,
         macro_choice: macroChoice,
-        dailyMeals,
+        daily_meals: dailyMeals,
         activity_level: activityLevel,
         weekly_workouts: weeklyWorkouts,
       });
@@ -167,7 +167,6 @@ const SetGoalsPage: React.FC<SetGoalsProps> = ({ navigation, route }) => {
         value={dailyMeals}
         onChangeText={setDailyMeals}
         placeholder="Enter number of meals (1-8)"
-        keyboardType="numeric"
       />
 
       <Text style={styles.label}>Activity Level</Text>

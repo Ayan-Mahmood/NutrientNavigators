@@ -16,10 +16,10 @@ app.register_blueprint(set_nutrition)
 app.register_blueprint(meal_suggestions)
 
 db_config = {
-    'host': 'sql5.freemysqlhosting.net',  # Your MySQL host
-    'user': 'sql5741512',  # Your MySQL username
-    'password': 'cdq3bvxp1c',  # Your MySQL password
-    'database': 'sql5741512'  # Your MySQL database name
+    'host': 'mysql5050.site4now.net',  # Your MySQL host
+    'user': 'a3e518_dietana',  # Your MySQL username
+    'password': 'Nov142024',  # Your MySQL password
+    'database': 'db_a3e518_dietana'  # Your MySQL database name
 }
 
 
@@ -135,7 +135,7 @@ def get_user_profile():
 
     try:
         # Query the database for the user's profile data
-        cursor.execute("SELECT name, age, biological_sex, height, weight, goal FROM user_profile WHERE user_id = %s", (user_id,))
+        cursor.execute("SELECT * FROM user_profile WHERE user_id = %s", (user_id,))
         user_profile = cursor.fetchone()
         user_profile["id"] = user_id
         # If no user is found with the given ID
@@ -163,7 +163,7 @@ def set_user_goals():
 
     try:
         data = request.get_json()
-        user_id = data.get('UserID')
+        user_id = data.get('user_id')
         name = data.get('Name')
         age = data.get('Age')
         biological_sex = data.get('BiologicalSex')
@@ -177,21 +177,21 @@ def set_user_goals():
         weekly_workouts = data.get('WeeklyWorkouts')
 
         # Check if the user already has goals set
-        cursor.execute("SELECT * FROM UserGoals WHERE UserID = %s", (user_id,))
+        cursor.execute("SELECT * FROM user_profile WHERE user_id = %s", (user_id,))
         existing_goals = cursor.fetchone()
 
         if existing_goals:
             # Update the existing goals
             cursor.execute("""
-                UPDATE UserGoals
+                UPDATE user_profile
                 SET Name = %s, Age = %s, BiologicalSex = %s, Height = %s, Weight = %s, Goal = %s,
                     PreferredDiet = %s, MacroChoice = %s, DailyMeals = %s, ActivityLevel = %s, WeeklyWorkouts = %s
-                WHERE UserID = %s
+                WHERE user_id = %s
             """, (name, age, biological_sex, height, weight, goal, preferred_diet, macro_choice, daily_meals, activity_level, weekly_workouts, user_id))
         else:
             # Insert new goals
             cursor.execute("""
-                INSERT INTO UserGoals (UserID, Name, Age, BiologicalSex, Height, Weight, Goal, PreferredDiet, MacroChoice, DailyMeals, ActivityLevel, WeeklyWorkouts)
+                INSERT INTO user_profile (user_id, Name, Age, BiologicalSex, Height, Weight, Goal, PreferredDiet, MacroChoice, DailyMeals, ActivityLevel, WeeklyWorkouts)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (user_id, name, age, biological_sex, height, weight, goal, preferred_diet, macro_choice, daily_meals, activity_level, weekly_workouts))
 
@@ -220,7 +220,7 @@ def get_user_goals():
     cursor = connection.cursor(dictionary=True)
 
     try:
-        cursor.execute("SELECT * FROM UserGoals WHERE UserID = %s", (user_id,))
+        cursor.execute("SELECT * FROM user_profile WHERE user_id = %s", (user_id,))
         user_goals = cursor.fetchone()
 
         if user_goals is None:
