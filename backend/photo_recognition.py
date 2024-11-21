@@ -128,11 +128,10 @@ def override_food():
         connection.close()
 
 
-# Route for providing nutritional data based on user input
+# Route for providing nutritional data for a hardcoded food item (e.g., pizza)
 @photo_recognition.route('/get_nutritional_data', methods=['GET'])
 def get_nutritional_data():
-    # Retrieve the food item from the query parameter
-    food_item = request.args.get("food_item", default="pizza", type=str)
+    food_item = "pizza"
 
     # Prepare the request to the USDA FoodData Central API
     params = {
@@ -163,5 +162,4 @@ def get_nutritional_data():
     except requests.RequestException as e:
         print(f"Error fetching data from USDA API: {e}")
         return jsonify({"error": "Failed to fetch nutritional data"}), 500
-    
-    
+
