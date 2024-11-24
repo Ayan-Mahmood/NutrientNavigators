@@ -5,7 +5,12 @@ import mysql.connector
 from mysql.connector import Error
 import requests
 import base64
-
+db_config = {
+    'host': 'mysql5050.site4now.net',  # Your MySQL host
+    'user': 'a3e518_dietana',  # Your MySQL username
+    'password': 'Nov142024',  # Your MySQL password
+    'database': 'db_a3e518_dietana'  # Your MySQL database name
+}
 photo_recognition = Blueprint("photo_recognition", __name__)
 CORS(photo_recognition)
 
@@ -21,12 +26,6 @@ CLARIFAI_URL = f"https://api.clarifai.com/v2/models/{MODEL_ID}/versions/{MODEL_V
 USDA_API_KEY = 'wS0NDbmfrOpcZDzyrgjkUY0lWhNSQB5ggkEzZhzT'
 USDA_API_URL = "https://api.nal.usda.gov/fdc/v1/foods/search"
 
-db_config = {
-    'host': 'sql5.freemysqlhosting.net',
-    'user': 'sql5741512',
-    'password': 'cdq3bvxp1c',
-    'database': 'sql5741512'
-}
 
 def get_db_connection():
     """Establish a connection to the MySQL database."""

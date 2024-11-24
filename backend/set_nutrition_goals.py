@@ -5,10 +5,10 @@ from mysql.connector import Error
 import mysql.connector
 set_nutrition = Blueprint("set_nutritions_goals", __name__)
 db_config = {
-    'host': 'sql5.freemysqlhosting.net',
-    'user': 'sql5741512',
-    'password': 'cdq3bvxp1c',
-    'database': 'sql5741512'
+    'host': 'mysql5050.site4now.net',  # Your MySQL host
+    'user': 'a3e518_dietana',  # Your MySQL username
+    'password': 'Nov142024',  # Your MySQL password
+    'database': 'db_a3e518_dietana'  # Your MySQL database name
 }
 
 def get_db_connection():
@@ -102,22 +102,33 @@ def set_goals():
                 "carbs": data.get('carbs'),
                 "fats": data.get('fats')
             }
-        print((user_id, name, age, biological_sex, height, weight, goal, preferred_diet, daily_meals, activity_level, weekly_workouts, macros['protein'], macros['carbs'], macros['fats']))
+        print((user_id, name, age, biological_sex, height, weight, goal, preferred_diet,macro_choice, daily_meals, activity_level, weekly_workouts))
         # Enter profile data into database
         user_profile = {
             "user_id": user_id,
             "name": name,
             "age": age,
         }
-        cursor.execute("""
-            INSERT INTO user_profile 
-            (user_id, name, age, biological_sex, height, weight, goal, preferred_diet, macro_choice, daily_meals, activity_level, weekly_workouts, protein, carbs, fats) 
-            VALUES (%s,%s ,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, (user_id, name, age, biological_sex, height, weight, goal, preferred_diet, macro_choice, daily_meals, activity_level, weekly_workouts, macros['protein'], macros['carbs'], macros['fats']))
-            #will this create a new user id or enter info into the existing one?
+         # Check if the user already has goals set
+        cursor.execute("SELECT * FROM user_profile WHERE user_id = %s", (user_id,))
+        existing_goals = cursor.fetchone()
+        if existing_goals:
+            # Update the existing goals
+            print("Exists")
+            cursor.execute("""
+                UPDATE user_profile
+                SET name = %s, age = %s, biological_sex = %s, height = %s, weight = %s, goal = %s, preferred_diet = %s, 
+                    macro_choice = %s, daily_meals = %s, activity_level = %s, weekly_workouts = %s, protein = %s, carbs = %s, fats = %s
+                WHERE user_id = %s
+            """, (name, age, biological_sex, height, weight, goal, preferred_diet, macro_choice, daily_meals, activity_level, weekly_workouts, macros["protein"], macros["carbs"], macros["fats"],user_id))
+        else:
+            cursor.execute("""
+                INSERT INTO user_profile 
+                (user_id, name, age, biological_sex, height, weight, goal, preferred_diet, macro_choice, daily_meals, activity_level, weekly_workouts, protein, carbs, fats) 
+                VALUES (%s,%s ,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,  %s, %s, %s)
+                """, (user_id, name, age, biological_sex, height, weight, goal, preferred_diet, macro_choice, daily_meals, activity_level, weekly_workouts,macros["protein"], macros["carbs"], macros["fats"]))
             
         connection.commit()
-
         return jsonify({"success": True, "message": "Your Results", "user_profile": user_profile}), 201
         #show summary of user choices and breakdown of calories and macros needed per day
     except Error as e:
