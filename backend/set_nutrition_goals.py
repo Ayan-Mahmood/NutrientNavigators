@@ -102,6 +102,9 @@ def set_goals():
                 "carbs": data.get('carbs'),
                 "fats": data.get('fats')
             }
+        if not all(macros.values()):
+            return jsonify({"success": False, "error": "Invalid macro values"}), 400
+            
         print((user_id, name, age, biological_sex, height, weight, goal, preferred_diet,macro_choice, daily_meals, activity_level, weekly_workouts))
         # Enter profile data into database
         user_profile = {
@@ -125,7 +128,7 @@ def set_goals():
             cursor.execute("""
                 INSERT INTO user_profile 
                 (user_id, name, age, biological_sex, height, weight, goal, preferred_diet, macro_choice, daily_meals, activity_level, weekly_workouts, protein, carbs, fats) 
-                VALUES (%s,%s ,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,  %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, (user_id, name, age, biological_sex, height, weight, goal, preferred_diet, macro_choice, daily_meals, activity_level, weekly_workouts,macros["protein"], macros["carbs"], macros["fats"]))
             
         connection.commit()
