@@ -53,7 +53,8 @@ def register():
         data = request.get_json()
         email = data.get('email')
         password = data.get('password')
-
+        if email == "" or password == "":
+            return jsonify({'success': False, 'error': 'Invalid input'}), 400
         # Check if email already in database
         cursor.execute('SELECT * FROM Users WHERE email = %s', (email,))
         existing_user = cursor.fetchone()

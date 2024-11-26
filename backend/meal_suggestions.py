@@ -3,7 +3,7 @@ import openai
 
 meal_suggestions = Blueprint("meal_suggestions", __name__)
 
-openai.api_key = "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"
+openai.api_key = "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"
 
 def get_meal_recommendations(goal, diet_type):
     prompt = f"Suggest a list of healthy meals for someone who wants to {goal}. Their diet preference is {diet_type}. Include breakfast, lunch, dinner, and snacks."
