@@ -12,6 +12,7 @@ import SetGoalsPage from "../components/pages/SetGoalsPage";
 import ViewUserProfile from "../components/pages/viewUserProfile";
 import EditUserProfile from "../components/pages/editUserProfile";
 import ViewMealSuggestions from "../components/pages/viewMealSuggestions";
+import DailySummaryScreen from "@/components/pages/dailySummaryScreen";
 // import PredictionScreen from "../components/pages/predictionScreen";
 // import OverrideScreen from "../components/pages/overrideScreen";
 type AccountInfo = {
@@ -38,6 +39,7 @@ export type RootStackParamList = {
   Upload: undefined;
   Prediction: { foodItems: { name: string; confidence: number }[] };
   Override: { originalFood: string };
+  DailySummaryScreen: AccountInfo;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -116,6 +118,11 @@ export default function App() {
           options={{ title: "Meal Suggestions" }}
           name="ViewMealSuggestions"
           component={ViewMealSuggestions}
+        />
+        <Stack.Screen
+          options={{ title: "Daily Summary" }}
+          name="DailySummaryScreen"
+          component={DailySummaryScreen}
         />
         {/* <Stack.Screen
           options={{ title: "Prediction Results" }}

@@ -54,6 +54,15 @@ const HomePage: React.FC<HomePageProps> = ({ navigation, route }) => {
           />
         </View>
 
+        <View style={styles.buttonSpacing}>
+          <Button
+            title="View Daily Summary"
+            onPress={() => 
+              navigation.navigate("DailySummaryScreen", { AccountInfo })
+            }
+          />
+        </View>
+
         {/* Logout Button */}
         <View style={styles.buttonSpacing}>
           <Button
