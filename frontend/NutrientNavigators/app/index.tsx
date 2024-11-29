@@ -11,6 +11,7 @@ import UploadScreen from "../components/pages/uploadScreen";
 import SetGoalsPage from "../components/pages/SetGoalsPage";
 import ViewUserProfile from "../components/pages/viewUserProfile";
 import EditUserProfile from "../components/pages/editUserProfile";
+import ShareUserProfile from "../components/pages/shareUserProfile";
 // import PredictionScreen from "../components/pages/predictionScreen";
 // import OverrideScreen from "../components/pages/overrideScreen";
 type AccountInfo = {
@@ -33,6 +34,7 @@ export type RootStackParamList = {
   SetGoalsPage: AccountInfo;
   ViewUserProfile: AccountInfo;
   EditUserProfile: AccountInfo;
+  ShareUserProfile: AccountInfo;
   Upload: undefined;
   Prediction: { foodItems: { name: string; confidence: number }[] };
   Override: { originalFood: string };
@@ -109,6 +111,11 @@ export default function App() {
           options={{ title: "Set Goals" }}
           name="EditUserProfile"
           component={EditUserProfile}
+        />
+          <Stack.Screen
+          options={{ title: "Share Profile" }}
+          name="ShareUserProfile"
+          component={ShareUserProfile}
         />
         {/* <Stack.Screen
           options={{ title: "Prediction Results" }}

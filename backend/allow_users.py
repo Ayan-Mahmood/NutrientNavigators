@@ -58,7 +58,7 @@ def get_list():
         return jsonify({"success": False, "error": "Database connection failed"}), 500
     cursor = connection.cursor()
     try:
-        data = request.get_json()
+        data = request.args
         user_id = data.get('user_id')
         shared_list = cursor.execute("Select email FROM UserAllowList Where user_id = %s", (user_id))
         return jsonify({"success": True, "user_profile": shared_list}), 200
