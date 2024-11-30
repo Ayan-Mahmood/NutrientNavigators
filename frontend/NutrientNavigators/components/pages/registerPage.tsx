@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, TextInput, Button, Text, StyleSheet } from "react-native";
 import axios from "axios";
 
-const flask_api = " http://127.0.0.1:5000";
+const flask_api = "http://127.0.0.1:5000";
 
 interface RegisterProps {
   navigation: any;
