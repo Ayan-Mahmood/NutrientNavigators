@@ -142,7 +142,7 @@ const App: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await fetch(` http://127.0.0.1:5000/get_nutritional_data?food_item=${foodInput}`);
+      const response = await fetch(`http://127.0.0.1:5000/get_nutritional_data?food_item=${foodInput}`);
       const responseJson = await response.json();
 
       if (responseJson.error) {
