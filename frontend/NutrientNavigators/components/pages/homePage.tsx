@@ -21,9 +21,20 @@ const HomePage: React.FC<HomePageProps> = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.welcome}>Welcome back, {AccountInfo.user_profile.name}!</Text>
+      <Text style={styles.welcome}>
+        Welcome back, {AccountInfo.user_profile.name}!
+      </Text>
 
       <View style={styles.buttonContainer}>
+        <View style={styles.buttonSpacing}>
+          <Button
+            title="Generate Meals"
+            onPress={() =>
+              navigation.navigate("ViewMealSuggestions", { AccountInfo })
+            }
+          />
+        </View>
+
         {/* Log Meal Button to Navigate to Upload Screen */}
         <View style={styles.buttonSpacing}>
           <Button
