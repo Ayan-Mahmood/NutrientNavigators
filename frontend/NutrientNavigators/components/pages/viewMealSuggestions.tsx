@@ -30,7 +30,7 @@ const ViewMealSuggestions: React.FC<ViewMealSuggestionsProps> = ({
       setLoading(true);
       setError("");
 
-      const response = await fetch(`http://127.0.0.1:5000suggest_meals`, {
+      const response = await fetch(`http://127.0.0.1:5000/suggest_meals`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

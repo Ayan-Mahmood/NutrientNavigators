@@ -9,7 +9,7 @@ from set_nutrition_goals import set_nutrition
 from meal_suggestions import meal_suggestions
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://nasty-crypt-xgr6rqp6r4v3xpr-19006.app.github.dev"}})
+CORS(app, resources={r"/*": {"origins": "*"}})
 #CORS(app, resources={r"/*": {"origins": "http://localhost:19006"}})
 # Register the Blueprint with an optional URL prefix
 app.register_blueprint(photo_recognition)
