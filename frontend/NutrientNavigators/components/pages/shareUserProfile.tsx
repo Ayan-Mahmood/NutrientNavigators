@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert, FlatList } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, TextInput, Button, StyleSheet, Alert, FlatList, ToastAndroid } from "react-native";
 import { StackScreenProps } from "@react-navigation/stack";
 import { RootStackParamList } from "../../app/index";
 import axios from "axios";
@@ -9,14 +9,25 @@ type ShareUserProfileProps = StackScreenProps<
   "ShareUserProfile"
 >;
 
+
 const ShareUserProfile: React.FC<ShareUserProfileProps> = ({
   navigation,
   route,
 }) => {
-  const  AccountInfo = route.params;
+  const  AccountInfo = route.params.AccountInfo;
   const [email, setEmail] = useState("");
   const [data, setData] = useState([]);
 
+  const Item = ({ email }) => (
+    <View style={styles.item}>      
+      <Text style={styles.email}>{email}</Text>
+    </View>
+  );
+  
+
+  const renderItem = ({ item }) => (
+    <Item email={item} />
+  );
 
   const handleSave = async () => {
     try{
@@ -45,13 +56,10 @@ const ShareUserProfile: React.FC<ShareUserProfileProps> = ({
 
   const getList = async () => {
     try{
-      const response = await axios.get(`${flask_api}/get-list`, {
-        params: {
-          user_id: AccountInfo.id,
-        },
-      });
-      
-      setData(response.data)
+      const user_id = AccountInfo.user_profile.id;
+      const response = await axios.get(`${flask_api}/get-list?user_id=${user_id}`);
+      const responseData = response.data[1];      
+      setData(responseData)
       
     }
     catch(error){
@@ -66,33 +74,57 @@ const ShareUserProfile: React.FC<ShareUserProfileProps> = ({
    
   };
 
-  getList();
+  const removeAccess = async (email) => {
+    try{
+      const user_id = AccountInfo.user_profile.id;
+      const response = await axios.get(`${flask_api}/delete-user?user_id=${user_id}&email=${email}`);
+      const responseData = response.data[1];      
+      setData(responseData)
+      
+    }
+    catch(error){
+      if(error){
+        console.log(error);
+        Alert.alert(
+          "Allowed Access Update Failed",
+          "Your profile was not shared."
+        );
+      }
+    }   
+
+  };
+
+  useEffect(() => {
+    // This code will run only once when the component mounts
+    getList();
+  }, []); // The empty dependency array ensures this effect only runs once
+
 
   return (
-
-
     
-    <View style={styles.container}>
-       <Button title="GetList" onPress={getList} />
+    <View style={styles.container}> 
+     <View style={styles.subcontainer}>
+     <Text style={styles.title}>Allowed Users</Text>
+        <FlatList
+              data={data}
+              renderItem={renderItem}
+              keyExtractor={(item, index) => index.toString()}
+              
+            />
+      </View>
+      <View style={styles.subcontainer}>
+
+        <Text style={styles.title}>Share Your Journal</Text>
       
-      <FlatList
-        data={data}
-        renderItem={({ item }) => (
-          <Text>{item.name}</Text>
-        )}
-        keyExtractor={(item) => item.id}
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="example@email.com"
+          value={email}
+          onChangeText={setEmail}
+        />
 
-      <Text style={styles.title}>Share Your Journal</Text>
-    
-      <TextInput
-        style={styles.input}
-        placeholder="example@email.com"
-        value={email}
-        onChangeText={setEmail}
-      />
-
-      <Button title="Save" onPress={handleSave} />
+        <Button title="Save" onPress={handleSave} />
+      </View>
     </View>
   );
 };
@@ -104,6 +136,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
     backgroundColor: "#f8f9fa",
+  },
+  subcontainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent:"flex-start",
+  
   },
   title: {
     fontSize: 24,
@@ -118,6 +156,15 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 15,
     width: "80%",
+  },
+  item: {
+    backgroundColor: '#f9c2ff',
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+  },
+  email: {
+    fontSize: 32,
   },
 });
 
