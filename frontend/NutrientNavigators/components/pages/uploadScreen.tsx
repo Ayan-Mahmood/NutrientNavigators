@@ -98,7 +98,7 @@ const App: React.FC = () => {
     formData.append("image", imageBlob, "photo.jpg");
 
     try {
-      const response = await fetch(" http://127.0.0.1:5000//recognize_food", {
+      const response = await fetch(" http://127.0.0.1:5000/recognize_food", {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -142,7 +142,7 @@ const App: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await fetch(` http://127.0.0.1:5000//get_nutritional_data?food_item=${foodInput}`);
+      const response = await fetch(` http://127.0.0.1:5000/get_nutritional_data?food_item=${foodInput}`);
       const responseJson = await response.json();
 
       if (responseJson.error) {
@@ -171,7 +171,7 @@ const App: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await fetch(" http://127.0.0.1:5000//save_log", {
+      const response = await fetch(" http://127.0.0.1:5000/save_log", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

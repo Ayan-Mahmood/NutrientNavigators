@@ -13,7 +13,7 @@ import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { StackScreenProps } from "@react-navigation/stack";
 import { RootStackParamList } from "../../app/index";
-const flask_api = " http://127.0.0.1:5000/";
+const flask_api = " http://127.0.0.1:5000";
 
 type SetGoalsProps = StackScreenProps<RootStackParamList, "SetGoalsPage">;
 

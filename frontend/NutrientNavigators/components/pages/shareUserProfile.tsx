@@ -3,7 +3,7 @@ import { View, Text, TextInput, Button, StyleSheet, Alert, FlatList, ToastAndroi
 import { StackScreenProps } from "@react-navigation/stack";
 import { RootStackParamList } from "../../app/index";
 import axios from "axios";
-const flask_api = " http://127.0.0.1:5000/";
+const flask_api = " http://127.0.0.1:5000";
 type ShareUserProfileProps = StackScreenProps<
   RootStackParamList,
   "ShareUserProfile"
