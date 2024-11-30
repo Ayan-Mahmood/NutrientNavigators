@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
 import os
+from dotenv import load_dotenv
 
 import openai
 
 meal_suggestions = Blueprint("meal_suggestions", __name__)
-openai.api_key = "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"
+load_dotenv()
+openai.api_key = os.getenv("SECRET_KEY")
 
 def get_meal_recommendations(goal, diet_type):
     prompt = f"Suggest a list of healthy meals for someone who wants to {goal}. Their diet preference is {diet_type}. Include breakfast, lunch, dinner, and snacks."
