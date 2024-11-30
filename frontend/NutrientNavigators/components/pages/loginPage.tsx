@@ -8,7 +8,7 @@ import {
   Pressable,
 } from "react-native";
 import axios from "axios";
-const flask_api = " https://nasty-crypt-xgr6rqp6r4v3xpr-5000.app.github.dev/";
+const flask_api = " http://127.0.0.1:5000/";
 interface LoginProps {
   navigation: any;
 }
