@@ -13,7 +13,7 @@ import ViewUserProfile from "../components/pages/viewUserProfile";
 import EditUserProfile from "../components/pages/editUserProfile";
 import ShareUserProfile from "../components/pages/shareUserProfile";
 import ViewMealSuggestions from "../components/pages/viewMealSuggestions";
-import DailySummaryScreen from "@/components/pages/dailySummaryScreen";
+import DailySummaryScreen from "../components/pages/dailySummaryScreen";
 // import PredictionScreen from "../components/pages/predictionScreen";
 // import OverrideScreen from "../components/pages/overrideScreen";
 type AccountInfo = {
