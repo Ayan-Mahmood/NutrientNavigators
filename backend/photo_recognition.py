@@ -26,6 +26,12 @@ CLARIFAI_URL = f"https://api.clarifai.com/v2/models/{MODEL_ID}/versions/{MODEL_V
 USDA_API_KEY = 'wS0NDbmfrOpcZDzyrgjkUY0lWhNSQB5ggkEzZhzT'
 USDA_API_URL = "https://api.nal.usda.gov/fdc/v1/foods/search"
 
+db_config = {
+    'host': 'mysql5050.site4now.net',  # Your MySQL host
+    'user': 'a3e518_dietana',  # Your MySQL username
+    'password': 'Nov142024',  # Your MySQL password
+    'database': 'db_a3e518_dietana'  # Your MySQL database name
+}
 
 def get_db_connection():
     """Establish a connection to the MySQL database."""
