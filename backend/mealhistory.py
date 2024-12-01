@@ -54,4 +54,4 @@ def get_meal_history():
         connection.close()
 
 if __name__ == '__main__':
-    set_goals.run(debug=True)
+    get_meal_history.run(debug=True)
