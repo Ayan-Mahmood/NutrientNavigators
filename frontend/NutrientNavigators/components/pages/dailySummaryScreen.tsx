@@ -1,115 +1,169 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet } from "react-native";
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
+import axios from "axios";
+import { StackScreenProps } from "@react-navigation/stack";
+import { RootStackParamList } from "../../app/index";
 
 const flask_api = "http://127.0.0.1:5000";
 
-interface Macronutrients {
-    carbs: number;
-    proteins: number;
-    fats: number;
-}
+type DailySummaryScreenProps = StackScreenProps<
+  RootStackParamList,
+  "DailySummaryScreen"
+>;
 
-interface FoodItem {
-    food_name: string;
-    calories: number;
-    carbs: number;
-    proteins: number;
-    fats: number;
-}
+const DailySummaryScreen: React.FC<DailySummaryScreenProps> = ({
+  route,
+  navigation,
+}) => {
+  const { AccountInfo } = route.params;
 
-interface Goals {
-    calories: number;
-    carbs: number;
-    proteins: number;
-    fats: number;
-}
+  const [dailySummary, setDailySummary] = useState<{
+    meals: { name: string; calories: number; protein: number; carbs: number; fat: number }[];
+    totalCalories: number;
+    totalProtein: number;
+    totalCarbs: number;
+    totalFat: number;
+  } | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
 
-interface DailySummary {
-    date: string;
-    summary: {
-        totalCalories: number;
-        macronutrients: Macronutrients;
-        foodItems: FoodItem[];
-    };
-    goals: Goals;
-}
-
-const DailySummaryScreen = () => {
-    const [summary, setSummary] = useState<DailySummary | null>(null);
-
-    useEffect(() => {
-        fetchDailySummary();
-    }, []);
-
-    const fetchDailySummary = async () => {
-        try {
-            const response = await axios.get<DailySummary>(`${flask_api}/api/daily-summary`);
-            setSummary(response.data);
-        } catch (error) {
-            console.error("Error fetching daily summary:", error);
-        }
-    };
-
-    if (!summary) {
-        return <Text>Loading...</Text>;
+  useEffect(() => {
+    if (!AccountInfo) {
+      Alert.alert(
+        "Unauthorized Access",
+        "You must be logged in to access this page.",
+        [{ text: "OK", onPress: () => navigation.replace("LoginPage") }]
+      );
+      return;
     }
+    fetchDailySummary();
+  }, [AccountInfo]);
 
+  const fetchDailySummary = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${flask_api}/daily_summary`, {
+        params: { user_id: AccountInfo.id, date: new Date().toISOString().split("T")[0] },
+      });
+      if (response.data.success) {
+        setDailySummary(response.data.summary);
+      } else {
+        setError("Failed to fetch daily summary.");
+      }
+    } catch (err) {
+      setError("An error occurred while fetching daily summary.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
     return (
-        <View style={styles.container}>
-            <Text style={styles.date}>{summary.date}</Text>
-            <Text style={styles.calories}>
-                Total Calories: {summary.summary.totalCalories} / {summary.goals.calories}
-            </Text>
-            <MacroBreakdown 
-                macronutrients={summary.summary.macronutrients} 
-                goals={summary.goals} 
-            />
-            <FoodList foodItems={summary.summary.foodItems} />
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
+
+  if (!dailySummary) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>No summary available for today.</Text>
+      </View>
+    );
+  }
+
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>Today's Meals</Text>
+      {dailySummary.meals.map((meal, index) => (
+        <View key={index} style={styles.mealItem}>
+          <Text style={styles.mealName}>{meal.name}</Text>
+          <Text>Calories: {meal.calories}</Text>
+          <Text>Protein: {meal.protein}g</Text>
+          <Text>Carbs: {meal.carbs}g</Text>
+          <Text>Fat: {meal.fat}g</Text>
         </View>
-    );
-};
+      ))}
 
-interface MacroBreakdownProps {
-    macronutrients: Macronutrients;
-    goals: Goals;
-}
-
-const MacroBreakdown = ({ macronutrients, goals }: MacroBreakdownProps) => {
-    return (
-        <View style={styles.macros}>
-            <Text>Carbs: {macronutrients.carbs}g / {goals.carbs}g</Text>
-            <Text>Proteins: {macronutrients.proteins}g / {goals.proteins}g</Text>
-            <Text>Fats: {macronutrients.fats}g / {goals.fats}g</Text>
-        </View>
-    );
-};
-
-interface FoodListProps {
-    foodItems: FoodItem[];
-}
-
-const FoodList = ({ foodItems }: FoodListProps) => {
-    return (
-        <FlatList
-            data={foodItems}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }: { item: FoodItem }) => (
-                <View style={styles.foodItem}>
-                    <Text>{item.food_name}</Text>
-                    <Text>{item.calories} cal</Text>
-                </View>
-            )}
-        />
-    );
+      <View style={styles.summarySection}>
+        <Text style={styles.summaryTitle}>Summary</Text>
+        <Text>Total Calories: {dailySummary.totalCalories}</Text>
+        <Text>Protein: {dailySummary.totalProtein}g</Text>
+        <Text>Carbs: {dailySummary.totalCarbs}g</Text>
+        <Text>Fat: {dailySummary.totalFat}g</Text>
+        <Text>
+          Calorie Goal: {AccountInfo.user_profile.goal.calories} (if available)
+        </Text>
+      </View>
+    </ScrollView>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: { padding: 20 },
-    date: { fontSize: 18, fontWeight: 'bold' },
-    calories: { fontSize: 16, marginVertical: 10 },
-    macros: { marginVertical: 10 },
-    foodItem: { flexDirection: 'row', justifyContent: 'space-between', marginVertical: 5 }
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#fff",
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  mealItem: {
+    padding: 15,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  mealName: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  summarySection: {
+    marginTop: 20,
+    padding: 15,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+  },
+  summaryTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
 });
 
 export default DailySummaryScreen;
