@@ -56,7 +56,6 @@ const HomePage: React.FC<HomePageProps> = ({ navigation, route }) => {
 
         <View style={styles.buttonSpacing}>
           <Button
-dailysummary
             title="View Daily Summary"
             onPress={() => 
               navigation.navigate("DailySummaryScreen", { AccountInfo })
@@ -64,6 +63,7 @@ dailysummary
           />
         </View>                    
         <View style={styles.buttonSpacing}>
+          < Button  
             title="Share Your Journal"
             onPress={() =>
               navigation.navigate("ShareUserProfile", { AccountInfo })
