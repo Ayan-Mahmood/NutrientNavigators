@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from photo_recognition import photo_recognition
 from set_nutrition_goals import set_nutrition
 from meal_suggestions import meal_suggestions
+from db_operations import LogMeal
 
 app = Flask(__name__)
 #CORS(app, resources={r"/*": {"origins": "*"}})
@@ -237,6 +238,41 @@ def get_user_goals():
             cursor.close()
         if connection is not None:
             connection.close()
+
+
+@app.route('/log_meal', methods=['POST'])
+def log_meal():
+    """
+    API endpoint to log a meal and its nutrition data.
+    Expects JSON data with selected_items and user_id.
+    """
+    data = request.json
+    selected_items = data.get('selected_items', [])
+    user_id = data.get('user_id')
+
+    if not user_id or not selected_items:
+        return jsonify({"error": "user_id and selected_items are required"}), 400
+
+    # Call LogMeal to log the meal and nutrition data
+    response = LogMeal(selected_items, user_id)
+    return jsonify(response)
+
+
+@app.route('/suggest_meals', methods=['POST'])
+def suggest_meals():
+    user_profile = request.json  # User profile data sent from the frontend
+
+    # Generate meal suggestions based on user profile (example logic)
+    meal_suggestions = [
+        "Grilled Chicken Salad with Quinoa",
+        "Steamed Salmon with Vegetables",
+        "Tofu Stir-fry with Brown Rice"
+    ]
+
+    return jsonify({
+        "success": True,
+        "meals": meal_suggestions
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)

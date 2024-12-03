@@ -24,16 +24,14 @@ class TestMealSuggestions(unittest.TestCase):
         }
         response = self.client.post('/suggest_meals', data=json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 200)
-
         response_data = response.get_json()
         self.assertTrue(response_data['success'])
         self.assertIn("Breakfast", response_data['meals'])
 
     @patch('meal_suggestions.openai.ChatCompletion.create')
     def test_suggest_meals_route_no_data(self, mock_openai):
-        response = self.client.post('/suggest_meals', data={}, content_type='application/json')
+        response = self.client.post('/suggest_meals', data=json.dumps({}), content_type='application/json')
         self.assertEqual(response.status_code, 400)
-
         response_data = response.get_json()
         self.assertFalse(response_data['success'])
         self.assertEqual(response_data['error'], 'Invalid input')
@@ -47,7 +45,6 @@ class TestMealSuggestions(unittest.TestCase):
         }
         response = self.client.post('/suggest_meals', data=json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 500)
-
         response_data = response.get_json()
         self.assertFalse(response_data['success'])
         self.assertIn("API Error", response_data['error'])
