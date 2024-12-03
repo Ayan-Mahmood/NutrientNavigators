@@ -12,7 +12,11 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
+import { StackScreenProps } from "@react-navigation/stack";
+import { RootStackParamList } from "../../app/index";
 import * as ImagePicker from "expo-image-picker";
+
+type UploadScreenProps = StackScreenProps<RootStackParamList, "Upload">;
 
 interface FoodItem {
   name: string;
@@ -20,7 +24,9 @@ interface FoodItem {
   isSelected: boolean;
 }
 
-const App: React.FC = () => {
+const App: React.FC<UploadScreenProps> = ({route, navigation}) => {
+  const { AccountInfo } = route.params;
+  const userId = AccountInfo.user_profile.id;
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [disableButton, setDisableButton] = useState<boolean>(false);
   const [imageUri, setImageUri] = useState<string | null>(null);
@@ -206,41 +212,48 @@ const App: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    const selectedFood = recognizedFood.filter((item) => item.isSelected).map((item) => item.name);
-    if (foodInput.trim()) {
-      selectedFood.push(foodInput.trim());
-    }
-
+    // Prepare the selected food log with nutritional data
+    const selectedFood = recognizedFood
+      .filter((item) => item.isSelected)
+      .map((item) => ({
+        name: item.name,
+        calories: nutrition?.calories ?? 0, // Use numeric values directly
+        protein: nutrition?.protein ?? 0,
+        fat: nutrition?.fat ?? 0,
+        carbohydrates: nutrition?.carbohydrates ?? 0,
+      }));
+  
     if (selectedFood.length === 0) {
-      Alert.alert("Error", "Please select or input at least one food item.");
+      Alert.alert("Error", "Please select at least one food item.");
       return;
     }
-
+  
     try {
-      setLoading(true);
-      const response = await fetch("http://127.0.0.1:5000/save_log", {
+      // Send the selected food log to the backend
+      const response = await fetch(`http://127.0.0.1:5000/save_log`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ foodLog: selectedFood }),
+        body: JSON.stringify({
+          user_id: userId, // Include user_id from AccountInfo
+          foodLog: selectedFood,
+        }),
       });
-
+  
       if (response.ok) {
         Alert.alert("Success", "Food log saved successfully.");
-        setFoodInput("");
-        setRecognizedFood([]);
-        setNutrition(null);
+        setRecognizedFood([]); // Clear the recognized food list
+        setNutrition(null); // Reset the nutrition state
       } else {
-        throw new Error("Failed to save log.");
+        const errorResponse = await response.json();
+        Alert.alert("Error", errorResponse.error || "Failed to save log.");
       }
     } catch (error) {
       console.error("Error saving log:", error);
       Alert.alert("Error", "Failed to save the food log.");
-    } finally {
-      setLoading(false);
     }
-  };
+  };  
 
   return (
     <SafeAreaView style={styles.container}>

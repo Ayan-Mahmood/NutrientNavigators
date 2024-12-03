@@ -39,7 +39,9 @@ const HomePage: React.FC<HomePageProps> = ({ navigation, route }) => {
         <View style={styles.buttonSpacing}>
           <Button
             title="Log Your Meal"
-            onPress={() => navigation.navigate("Upload")}
+            onPress={() => 
+              navigation.navigate("Upload", { AccountInfo })
+            }
           />
         </View>
 

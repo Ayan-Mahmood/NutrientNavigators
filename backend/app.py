@@ -8,6 +8,7 @@ from allow_users import allow_users
 from set_nutrition_goals import set_nutrition
 from meal_suggestions import meal_suggestions
 from daily_summary import daily_summary
+from mealhistory import meal_history
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -18,6 +19,7 @@ app.register_blueprint(set_nutrition)
 app.register_blueprint(allow_users)
 app.register_blueprint(meal_suggestions)
 app.register_blueprint(daily_summary)
+app.register_blueprint(meal_history)
 
 db_config = {
     'host': 'mysql5050.site4now.net',  # Your MySQL host

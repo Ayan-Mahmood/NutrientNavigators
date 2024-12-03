@@ -100,3 +100,14 @@ CREATE TABLE LogItems (
     Selenium INT,
     FOREIGN KEY (UserMealID) REFERENCES UserMeals(id) ON DELETE CASCADE
 );
+
+CREATE TABLE meal_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    meal_name VARCHAR(255) NOT NULL,
+    date_logged DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    calories FLOAT NOT NULL DEFAULT 0,
+    protein FLOAT NOT NULL DEFAULT 0,
+    fat FLOAT NOT NULL DEFAULT 0,
+    carbohydrates FLOAT NOT NULL DEFAULT 0
+);
