@@ -7,6 +7,7 @@ from photo_recognition import photo_recognition
 from allow_users import allow_users
 from set_nutrition_goals import set_nutrition
 from meal_suggestions import meal_suggestions
+from daily_summary import daily_summary
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -16,6 +17,7 @@ app.register_blueprint(photo_recognition)
 app.register_blueprint(set_nutrition)
 app.register_blueprint(allow_users)
 app.register_blueprint(meal_suggestions)
+app.register_blueprint(daily_summary)
 
 db_config = {
     'host': 'mysql5050.site4now.net',  # Your MySQL host

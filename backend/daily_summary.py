@@ -1,9 +1,10 @@
 from flask import Blueprint, request, jsonify
 from mysql.connector import Error
+from flask_cors import CORS
 import mysql.connector
 
 daily_summary = Blueprint("daily_summary", __name__)
-
+CORS(daily_summary)
 # Database Configuration
 db_config = {
     'host': 'mysql5050.site4now.net',  # Your MySQL host
