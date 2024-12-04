@@ -7,6 +7,7 @@ from photo_recognition import photo_recognition
 from allow_users import allow_users
 from set_nutrition_goals import set_nutrition
 from meal_suggestions import meal_suggestions
+from db_operations import LogMeal
 from daily_summary import daily_summary
 from mealhistory import meal_history
 
@@ -243,6 +244,41 @@ def get_user_goals():
             connection.close()
 
 
+@app.route('/log_meal', methods=['POST'])
+def log_meal():
+    """
+    API endpoint to log a meal and its nutrition data.
+    Expects JSON data with selected_items and user_id.
+    """
+    data = request.json
+    selected_items = data.get('selected_items', [])
+    user_id = data.get('user_id')
+
+    if not user_id or not selected_items:
+        return jsonify({"error": "user_id and selected_items are required"}), 400
+
+    # Call LogMeal to log the meal and nutrition data
+    response = LogMeal(selected_items, user_id)
+    return jsonify(response)
+
+
+@app.route('/suggest_meals', methods=['POST'])
+def suggest_meals():
+    user_profile = request.json  # User profile data sent from the frontend
+
+    # Generate meal suggestions based on user profile (example logic)
+    meal_suggestions = [
+        "Grilled Chicken Salad with Quinoa",
+        "Steamed Salmon with Vegetables",
+        "Tofu Stir-fry with Brown Rice"
+    ]
+
+    return jsonify({
+        "success": True,
+        "meals": meal_suggestions
+    })
+  
+  
 @app.route('/monthly_progress', methods=['GET'])
 def get_monthly_progress():
     user_id = request.args.get('user_id')

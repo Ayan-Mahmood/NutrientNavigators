@@ -22,7 +22,7 @@ const ViewMealSuggestions: React.FC<ViewMealSuggestionsProps> = ({
 }) => {
   const { AccountInfo } = route.params;
   const [loading, setLoading] = useState(false);
-  const [mealSuggestions, setMealSuggestions] = useState<string>("");
+  const [mealSuggestions, setMealSuggestions] = useState<string[]>([]);
   const [error, setError] = useState("");
 
   const generateMealSuggestions = async () => {
@@ -42,12 +42,14 @@ const ViewMealSuggestions: React.FC<ViewMealSuggestionsProps> = ({
       const data = await response.json();
 
       if (data.success) {
-        setMealSuggestions(data.meals); // Set the meal suggestions
+        setMealSuggestions(data.meals); // Set mealSuggestions as an array
       } else {
-        setError("Failed to generate meal suggestions");
+        setError("Failed to generate meal suggestions.");
+        setMealSuggestions([]); // Clear meal suggestions if it failed
       }
     } catch (error) {
-      setError("An error occurred while fetching meal suggestions");
+      setError("An error occurred while fetching meal suggestions.");
+      setMealSuggestions([]);
     } finally {
       setLoading(false);
     }
@@ -62,13 +64,19 @@ const ViewMealSuggestions: React.FC<ViewMealSuggestionsProps> = ({
 
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
 
-      {error ? (
-        <Text style={styles.errorText}>{error}</Text>
-      ) : (
-        <ScrollView style={styles.scrollView}>
+      {!loading && (
+        <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentContainer}>
           <Text style={styles.title}>Meal Suggestions</Text>
-          {mealSuggestions && (
-            <Text style={styles.mealText}>{mealSuggestions}</Text>
+          {error ? (
+            <Text style={styles.errorText}>{error}</Text>
+          ) : mealSuggestions.length > 0 ? (
+            mealSuggestions.map((meal, index) => (
+              <Text key={index} style={styles.mealText}>
+                • {meal}
+              </Text>
+            ))
+          ) : (
+            <Text style={styles.mealText}>No suggestions available yet. Please try again.</Text>
           )}
         </ScrollView>
       )}
@@ -86,17 +94,25 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
+    textAlign: "center", // Center align the title text
   },
   scrollView: {
     marginTop: 20,
   },
+  contentContainer: {
+    flexGrow: 1,
+    justifyContent: "center", // Center content vertically when scroll view is small
+  },
   mealText: {
-    fontSize: 16,
+    fontSize: 18,
     lineHeight: 24,
+    marginBottom: 10,
+    textAlign: "center", // Center align meal suggestion text
   },
   errorText: {
     color: "red",
-    fontSize: 16,
+    fontSize: 18,
+    textAlign: "center", // Center align error text
   },
 });
 
