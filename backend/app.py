@@ -4,17 +4,21 @@ import mysql.connector
 from mysql.connector import Error
 from werkzeug.security import generate_password_hash, check_password_hash
 from photo_recognition import photo_recognition
+from allow_users import allow_users
 from set_nutrition_goals import set_nutrition
 from meal_suggestions import meal_suggestions
 from db_operations import LogMeal
+from daily_summary import daily_summary
+from mealhistory import meal_history
 
 app = Flask(__name__)
-#CORS(app, resources={r"/*": {"origins": "*"}})
-CORS(app, resources={r"/*": {"origins": "http://localhost:19006"}})
-# Register the Blueprint with an optional URL prefix
+CORS(app, resources={r"/*": {"origins": "*"}})
 app.register_blueprint(photo_recognition)
 app.register_blueprint(set_nutrition)
+app.register_blueprint(allow_users)
 app.register_blueprint(meal_suggestions)
+app.register_blueprint(daily_summary)
+app.register_blueprint(meal_history)
 
 db_config = {
     'host': 'mysql5050.site4now.net',  # Your MySQL host
@@ -273,6 +277,67 @@ def suggest_meals():
         "success": True,
         "meals": meal_suggestions
     })
+  
+  
+@app.route('/monthly_progress', methods=['GET'])
+def get_monthly_progress():
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify({"error": "User ID is required"}), 400
+
+    connection = get_db_connection()
+    if connection is None:
+        return jsonify({"error": "Failed to connect to the database"}), 500
+
+    cursor = connection.cursor(dictionary=True)
+    try:
+        # Get user goals
+        cursor.execute("SELECT protein, carbs, fats FROM user_profile WHERE id = %s", (user_id,))
+        user_goals = cursor.fetchone()
+
+        if not user_goals:
+            return jsonify({"error": "User profile not found"}), 404
+
+        # Fetch meal logs and aggregate progress for each day
+        cursor.execute("""
+        SELECT DATE(date_logged) AS day, 
+               SUM(calories) AS total_calories,
+               SUM(protein) AS total_protein,
+               SUM(carbohydrates) AS total_carbs,
+               SUM(fat) AS total_fats,
+               (SUM(protein * 4) / SUM(calories)) * 100 AS protein_percent,
+               (SUM(carbohydrates * 4) / SUM(calories)) * 100 AS carbs_percent,
+               (SUM(fat * 9) / SUM(calories)) * 100 AS fat_percent
+        FROM meal_logs
+        WHERE user_id = %s 
+            AND MONTH(date_logged) = MONTH(UTC_DATE())
+            AND YEAR(date_logged) = YEAR(UTC_DATE())
+        GROUP BY DATE(date_logged)
+        ORDER BY day ASC;
+        """, (user_id,))
+
+        progress = cursor.fetchall()
+
+        # Prepare the response
+        response = {
+            "goals": {
+                "protein_goal": user_goals["protein"],
+                "carbs_goal": user_goals["carbs"],
+                "fat_goal": user_goals["fats"],
+            },
+            "progress": progress
+        }
+
+        return jsonify(response), 200
+
+    except Error as e:
+        print(f"Error fetching monthly progress: {e}")
+        return jsonify({"error": "Failed to fetch monthly progress"}), 500
+    finally:
+        cursor.close()
+        connection.close()
+
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+     app.run(debug=True)

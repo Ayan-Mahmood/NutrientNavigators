@@ -39,7 +39,9 @@ const HomePage: React.FC<HomePageProps> = ({ navigation, route }) => {
         <View style={styles.buttonSpacing}>
           <Button
             title="Log Your Meal"
-            onPress={() => navigation.navigate("Upload")}
+            onPress={() => 
+              navigation.navigate("Upload", { AccountInfo })
+            }
           />
         </View>
 
@@ -50,6 +52,32 @@ const HomePage: React.FC<HomePageProps> = ({ navigation, route }) => {
             title="View Profile"
             onPress={() =>
               navigation.navigate("ViewUserProfile", { AccountInfo })
+            }
+          />
+        </View>
+
+        <View style={styles.buttonSpacing}>
+          <Button
+            title="Nutrition History"
+            onPress={() =>
+              navigation.navigate("ViewNutritionHistory", { AccountInfo })
+            }
+          />
+        </View>
+
+        <View style={styles.buttonSpacing}>
+          <Button
+            title="View Daily Summary"
+            onPress={() => 
+              navigation.navigate("DailySummaryScreen", { AccountInfo })
+            }
+          />
+        </View>                    
+        <View style={styles.buttonSpacing}>
+          < Button  
+            title="Share Your Journal"
+            onPress={() =>
+              navigation.navigate("ShareUserProfile", { AccountInfo })
             }
           />
         </View>

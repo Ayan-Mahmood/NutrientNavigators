@@ -26,6 +26,12 @@ CLARIFAI_URL = f"https://api.clarifai.com/v2/models/{MODEL_ID}/versions/{MODEL_V
 USDA_API_KEY = 'wS0NDbmfrOpcZDzyrgjkUY0lWhNSQB5ggkEzZhzT'
 USDA_API_URL = "https://api.nal.usda.gov/fdc/v1/foods/search"
 
+db_config = {
+    'host': 'mysql5050.site4now.net',  # Your MySQL host
+    'user': 'a3e518_dietana',  # Your MySQL username
+    'password': 'Nov142024',  # Your MySQL password
+    'database': 'db_a3e518_dietana'  # Your MySQL database name
+}
 
 def get_db_connection():
     """Establish a connection to the MySQL database."""
@@ -39,9 +45,9 @@ def get_db_connection():
 # recognizes the food by connecting to the Clarifai food-recognition-api
 @photo_recognition.route('/recognize_food', methods=['POST'])
 def recognize_food():
-    print("Request headers:", request.headers)
-    print("Request form:", request.form)
-    print("Request files:", request.files)
+    # print("Request headers:", request.headers)
+    # print("Request form:", request.form)
+    # print("Request files:", request.files)
 
     image_file = request.files.get('image')
     if not image_file:
@@ -90,7 +96,7 @@ def recognize_food():
             for concept in response_data['outputs'][0]['data']['concepts']
         ]
 
-        return jsonify({"recognized_food": food_items}), 200
+        return jsonify({"recognized_food": food_items[:5]}), 200
 
     except Exception as e:
         print(f"Error recognizing food: {e}")
@@ -127,10 +133,14 @@ def override_food():
         connection.close()
 
 
-# Route for providing nutritional data for a hardcoded food item (e.g., pizza)
+# Route for providing nutritional data for a specified food item
 @photo_recognition.route('/get_nutritional_data', methods=['GET'])
 def get_nutritional_data():
-    food_item = "pizza"
+    # Extract the food_item from the query parameters
+    food_item = request.args.get("food_item")
+
+    if not food_item:
+        return jsonify({"error": "No food item provided"}), 400
 
     # Prepare the request to the USDA FoodData Central API
     params = {

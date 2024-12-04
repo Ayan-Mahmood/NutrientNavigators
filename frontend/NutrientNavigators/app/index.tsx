@@ -11,7 +11,10 @@ import UploadScreen from "../components/pages/uploadScreen";
 import SetGoalsPage from "../components/pages/SetGoalsPage";
 import ViewUserProfile from "../components/pages/viewUserProfile";
 import EditUserProfile from "../components/pages/editUserProfile";
+import ShareUserProfile from "../components/pages/shareUserProfile";
 import ViewMealSuggestions from "../components/pages/viewMealSuggestions";
+import DailySummaryScreen from "../components/pages/dailySummaryScreen";
+import ViewNutritionHistory from "../components/pages/nutritionHistory";
 // import PredictionScreen from "../components/pages/predictionScreen";
 // import OverrideScreen from "../components/pages/overrideScreen";
 type AccountInfo = {
@@ -34,10 +37,13 @@ export type RootStackParamList = {
   SetGoalsPage: AccountInfo;
   ViewUserProfile: AccountInfo;
   EditUserProfile: AccountInfo;
+  ShareUserProfile: AccountInfo;
   ViewMealSuggestions: AccountInfo;
   Upload: undefined;
   Prediction: { foodItems: { name: string; confidence: number }[] };
   Override: { originalFood: string };
+  DailySummaryScreen: AccountInfo;
+  ViewNutritionHistory: AccountInfo;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -112,10 +118,25 @@ export default function App() {
           name="EditUserProfile"
           component={EditUserProfile}
         />
+          <Stack.Screen
+          options={{ title: "Share Profile" }}
+          name="ShareUserProfile"
+          component={ShareUserProfile}
+          />
         <Stack.Screen
           options={{ title: "Meal Suggestions" }}
           name="ViewMealSuggestions"
           component={ViewMealSuggestions}
+        />
+        <Stack.Screen
+          options={{ title: "Daily Summary" }}
+          name="DailySummaryScreen"
+          component={DailySummaryScreen}
+        />
+        <Stack.Screen
+          options={{ title: "Nutrition History" }}
+          name="ViewNutritionHistory"
+          component={ViewNutritionHistory}
         />
         {/* <Stack.Screen
           options={{ title: "Prediction Results" }}
