@@ -38,9 +38,9 @@ def get_daily_summary():
         
         # Fetch logged meals for the day
         cursor.execute("""
-            SELECT name, calories, protein, carbs, fat
-            FROM meals
-            WHERE user_id = %s AND DATE(logged_at) = %s
+            SELECT meal_name AS name, calories, protein, carbohydrates AS carbs, fat
+            FROM meal_logs
+            WHERE user_id = %s AND DATE(date_logged) = %s
         """, (user_id, date))
         meals = cursor.fetchall()
 
@@ -55,9 +55,9 @@ def get_daily_summary():
 
         # Fetch user goals
         cursor.execute("""
-            SELECT goal, protein, carbs, fats
+            SELECT goal AS calorie_goal, protein, carbs, fats
             FROM user_profile
-            WHERE user_id = %s
+            WHERE id = %s
         """, (user_id,))
         goals = cursor.fetchone()
 
@@ -67,6 +67,7 @@ def get_daily_summary():
             "totalProtein": total_protein,
             "totalCarbs": total_carbs,
             "totalFat": total_fat,
+            "goalCalories": goals.get("calorie_goal") if goals else None,
             "goalProtein": goals.get("protein") if goals else None,
             "goalCarbs": goals.get("carbs") if goals else None,
             "goalFats": goals.get("fats") if goals else None,
