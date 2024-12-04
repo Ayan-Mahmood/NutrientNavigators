@@ -132,13 +132,6 @@ const App: React.FC<UploadScreenProps> = ({route, navigation}) => {
     }
   };
 
-  // const handleSelectionChange = (index: number) => {
-  //   setRecognizedFood((prev) =>
-  //     prev.map((item, i) =>
-  //       i === index ? { ...item, isSelected: !item.isSelected } : item
-  //     )
-  //   );
-  // };
   const handleSelectionChange = async (index: number) => {
     const selectedItem = recognizedFood[index];
   
