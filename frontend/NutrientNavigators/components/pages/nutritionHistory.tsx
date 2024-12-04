@@ -18,7 +18,7 @@ import timezone from "dayjs/plugin/timezone";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const formatDay = (day: string) => dayjs.tz(day, "America/Los_Angeles");
+const formatDay = (day: string) => dayjs.utc(day); // Parse as UTC
 
 type ViewNutritionHistoryProps = StackScreenProps<
   RootStackParamList,
@@ -71,9 +71,9 @@ const ViewNutritionHistory: React.FC<ViewNutritionHistoryProps> = ({
 
   const updateProgressForDay = (day: dayjs.Dayjs, progressData: any[]) => {
     const progressForDay = progressData.find((entry: any) =>
-      dayjs(entry.day).isSame(day, "day")
+      formatDay(entry.day).isSame(day, "day")
     );
-
+  
     if (progressForDay) {
       setProgress({
         protein: progressForDay.protein_percent || 0,
@@ -84,6 +84,8 @@ const ViewNutritionHistory: React.FC<ViewNutritionHistoryProps> = ({
       setProgress({ protein: 0, carbs: 0, fats: 0 });
     }
   };
+  
+  
 
   const handleMonthChange = (direction: "prev" | "next") => {
     setCurrentDate((prev) =>
@@ -98,6 +100,7 @@ const ViewNutritionHistory: React.FC<ViewNutritionHistoryProps> = ({
   };
 
   const selectDay = (day: dayjs.Dayjs) => {
+    console.log("Selected Day:", selectedDay.format("YYYY-MM-DD"));
     setSelectedDay(day);
     updateProgressForDay(day, monthlyProgress);
   };

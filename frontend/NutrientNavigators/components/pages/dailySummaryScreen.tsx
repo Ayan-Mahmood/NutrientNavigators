@@ -11,8 +11,6 @@ import axios from "axios";
 import { StackScreenProps } from "@react-navigation/stack";
 import { RootStackParamList } from "../../app/index";
 
-const flask_api = "http://127.0.0.1:5000";
-
 type DailySummaryScreenProps = StackScreenProps<
   RootStackParamList,
   "DailySummaryScreen"
@@ -30,6 +28,10 @@ const DailySummaryScreen: React.FC<DailySummaryScreenProps> = ({
     totalProtein: number;
     totalCarbs: number;
     totalFat: number;
+    goalCalories?: number;
+    goalProtein?: number;
+    goalCarbs?: number;
+    goalFats?: number;
   } | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
@@ -49,8 +51,8 @@ const DailySummaryScreen: React.FC<DailySummaryScreenProps> = ({
   const fetchDailySummary = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${flask_api}/daily_summary`, {
-        params: { user_id: AccountInfo.id, date: new Date().toISOString().split("T")[0] },
+      const response = await axios.get(`http://127.0.0.1:5000/daily_summary`, {
+        params: { user_id: AccountInfo.user_profile.id, date: new Date().toISOString().split("T")[0] },
       });
       if (response.data.success) {
         setDailySummary(response.data.summary);
@@ -108,9 +110,9 @@ const DailySummaryScreen: React.FC<DailySummaryScreenProps> = ({
         <Text>Protein: {dailySummary.totalProtein}g</Text>
         <Text>Carbs: {dailySummary.totalCarbs}g</Text>
         <Text>Fat: {dailySummary.totalFat}g</Text>
-        <Text>
-          Calorie Goal: {AccountInfo.user_profile.goal.calories} (if available)
-        </Text>
+        {dailySummary.goalCalories && (
+          <Text>Calorie Goal: {dailySummary.goalCalories}</Text>
+        )}
       </View>
     </ScrollView>
   );

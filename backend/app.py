@@ -262,20 +262,22 @@ def get_monthly_progress():
         if not user_goals:
             return jsonify({"error": "User profile not found"}), 404
 
-        # Fetch meal logs for the current month
+        # Fetch meal logs and aggregate progress for each day
         cursor.execute("""
-        SELECT CONVERT_TZ(date_logged, '+00:00', '-08:00') AS day, 
-            SUM(calories) AS total_calories,
-            SUM(protein * 4) / SUM(calories) * 100 AS protein_percent,
-            SUM(carbohydrates * 4) / SUM(calories) * 100 AS carbs_percent,
-            SUM(fat * 9) / SUM(calories) * 100 AS fat_percent
+        SELECT DATE(date_logged) AS day, 
+               SUM(calories) AS total_calories,
+               SUM(protein) AS total_protein,
+               SUM(carbohydrates) AS total_carbs,
+               SUM(fat) AS total_fats,
+               (SUM(protein * 4) / SUM(calories)) * 100 AS protein_percent,
+               (SUM(carbohydrates * 4) / SUM(calories)) * 100 AS carbs_percent,
+               (SUM(fat * 9) / SUM(calories)) * 100 AS fat_percent
         FROM meal_logs
         WHERE user_id = %s 
-            AND MONTH(CONVERT_TZ(date_logged, '+00:00', '-08:00')) = MONTH(CURDATE())
-            AND YEAR(CONVERT_TZ(date_logged, '+00:00', '-08:00')) = YEAR(CURDATE())
-        GROUP BY CONVERT_TZ(date_logged, '+00:00', '-08:00')
+            AND MONTH(date_logged) = MONTH(UTC_DATE())
+            AND YEAR(date_logged) = YEAR(UTC_DATE())
+        GROUP BY DATE(date_logged)
         ORDER BY day ASC;
-
         """, (user_id,))
 
         progress = cursor.fetchall()
@@ -298,6 +300,8 @@ def get_monthly_progress():
     finally:
         cursor.close()
         connection.close()
+
+
 
 if __name__ == '__main__':
      app.run(debug=True)
