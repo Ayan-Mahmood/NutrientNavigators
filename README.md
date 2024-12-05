@@ -20,11 +20,14 @@ pip install flask_cors
 
 pip install mysql.connector
 
+pip install openai
+pip install python-dotenv
+
 ## How to run the project:
 
 Open a split terminal or two separate terminals
 
-In one terminal run: npx expo start --web
+In one terminal run: w
 
 In the other terminal run: python3 backend/app.py
 
@@ -33,7 +36,7 @@ In the other terminal run: python3 backend/app.py
 
 Change: http://127.0.0.1:5000
 
-To a URL like this example: https://nasty-crypt-xgr6rqp6r4v3xpr-5000.app.github.dev/
+To a URL like this example: https://nasty-crypt-xgr6rqp6r4v3xpr-5000.app.github.dev
 
 
 ## Troubleshooting
