@@ -31,8 +31,10 @@ const ShareUserProfile: React.FC<ShareUserProfileProps> = ({
 
   const handleSave = async () => {
     try{
+      const user_id = AccountInfo.user_profile.id;
       const response = await axios.post(`${flask_api}/share_logs`, {
         email,
+        user_id
       });
 
       if(response.data.success){
